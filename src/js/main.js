@@ -13,7 +13,7 @@ $(function() {
     console.log(quotes);
     $('.typeahead').on('typeahead:selected', function(ev, context) {
       console.log(context);
-      preview(file_name.replace("srt", "avi"), file_name.replace("avi", "srt"), context.startTimeParsed, context.duration * 1000, function() {
+      preview(file_name.replace("srt", "avi"), file_name.replace("avi", "srt"), context.startTimeParsed, context.duration, function() {
         //console.log(this, arguments);
         addVideo('out.webm');
       });
@@ -24,19 +24,21 @@ $(function() {
       limit: 5,
       template: [
         '<p class="text">{{text}}</p>',
-        '<span class="time">{{startTimeStripped}} - {{endTimeStripped}} ({{duration}}s)</span>'
+        '<span class="time">{{startTimeStripped}} - {{endTimeStripped}} ({{durationInSeconds}}s)</span>'
       ].join(''),
       engine: require('hogan.js'),
       local: _.map(quotes, function(srt_entry) {
-        var start = moment.duration(srt_entry.startTime).asMilliseconds();
-        var end = moment.duration(srt_entry.endTime).asMilliseconds();
-        var duration = (end - start) / 1000;
+        var start = moment.duration(srt_entry.startTime.replace(",", ".")).asMilliseconds();
+        var end = moment.duration(srt_entry.endTime.replace(",", ".")).asMilliseconds();
+        var duration = (end - start);
+
         _.extend(srt_entry, {
           value: srt_entry.text,
           text: srt_entry.text.replace(/<[^>]*>/g, ''),
           startTimeStripped: moment(start).utc().format('HH:mm:ss'),
           endTimeStripped: moment(end).utc().format('HH:mm:ss'),
           duration: duration,
+          durationInSeconds: Math.floor(duration / 1000),
           startTimeParsed: start,
           endTimeParsed:end
         });
@@ -44,12 +46,6 @@ $(function() {
       })
     });
   }
-
-
-  $('input').change(function() {
-    var file_name = $(this).val();
-    prepareTypeahead(file_name);
-  });
 
   $(window)
     .on('dragover', stop)
