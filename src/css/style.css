@@ -2,3 +2,29 @@
 
 #dropzone { border: 10px dashed #ccc; width: 300px; height: 300px; margin: 20px auto;}
 #dropzone.hover { border: 10px dashed #333; }
+
+.container {
+  width: 800px;
+  margin: 50px auto;
+}
+
+.typeahead-wrapper {
+  display: block;
+  margin: 50px 0;
+}
+
+.tt-dropdown-menu {
+  background-color: #fff;
+  border: 1px solid #000;
+}
+
+.tt-suggestion.tt-is-under-cursor {
+  background-color: #ccc;
+}
+
+.triggered-events {
+  float: right;
+  width: 500px;
+  height: 300px;
+}
+
