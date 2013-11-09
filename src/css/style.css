@@ -14,6 +14,7 @@ body {
 .tt-dropdown-menu {
   background-color: #fff;
   border: 1px solid #000;
+  width: 100%;
 }
 
 .tt-suggestion.tt-is-under-cursor {
@@ -24,6 +25,26 @@ body {
   float: right;
   width: 500px;
   height: 300px;
+}
+
+.startTime, .endTime {
+  width: 50%;
+}
+
+.startTime {
+  float: left;
+}
+
+.text {
+  font-size: 140%;
+  font-style: italic;
+  text-align: left;
+}
+.text:before {
+  content: "❝ ";
+}
+.text:after {
+  content: " ❞";
 }
 
 input{

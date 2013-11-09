@@ -4,14 +4,20 @@ $(function() {
     var fs = require('fs');
     var _ = require('lodash');
     var srt2data = require('subtitles-parser').fromSrt;
-
-
     var file_content = fs.readFileSync(file_name);
-
     var quotes = srt2data(file_content.toString());
+
+    console.log(quotes);
 
     $('.typeahead').typeahead({
       name: 'quotes',
+      limit: 12,
+      template: [
+        '<p class="text">{{text}}</p>',
+        '<span class="startTime">{{startTime}}</span>',
+        '<span class="endTime">{{endTime}}</span>'
+      ].join(''),
+      engine: require('hogan.js'),
       local: _.map(quotes, function(srt_entry) {
         _.extend(srt_entry, {
           value: srt_entry.text
@@ -63,4 +69,5 @@ $(function() {
   }
 
 });
+
 
