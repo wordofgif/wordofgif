@@ -1,3 +1,6 @@
+.idea
+node_modules
+webkitbuilds
 *~
 .DS_Store
 tmp/
@@ -5,5 +8,4 @@ log/
 dist/
 *.swp
 .swo
-jferris-*.gemspec
 *.scratch.*
