@@ -2,12 +2,50 @@
 <html>
 <head>
   <title></title>
+
+  <link href='bower_components/bootstrap/dist/css/bootstrap.css' rel='stylesheet' type='text/css'>
   <script type="text/javascript" src="js/jquery-2.0.3.js"></script>
+  <script type="text/javascript" src="bower_components/lodash/dist/lodash.js"></script>
+  <script type="text/javascript" src="bower_components/typeahead.js/dist/typeahead.js"></script>
   <script type="text/javascript" src="js/main.js"></script>
+    <style>
+      .container {
+        width: 800px;
+        margin: 50px auto;
+      }
+
+      .typeahead-wrapper {
+        display: block;
+        margin: 50px 0;
+      }
+
+      .tt-dropdown-menu {
+        background-color: #fff;
+        border: 1px solid #000;
+      }
+
+      .tt-suggestion.tt-is-under-cursor {
+        background-color: #ccc;
+      }
+
+      .triggered-events {
+        float: right;
+        width: 500px;
+        height: 300px;
+      }
+    </style>
+  
 </head>
 <body>
-<input type="file"/>
 
+<div class="container">
+
+<h1>Word of GIF</h1>
+
+<input type="file"/>
+<input class="typeahead">
+
+</div>
 
 </body>
 </html>
