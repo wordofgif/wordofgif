@@ -2,7 +2,7 @@
   "name": "nko4-witty-wizards",
   "version": "0.0.0",
   "description": "Witty Wizards",
-  "main": "server.js",
+  "main": "index.html",
   "scripts": {
     "start": "node server.js"
   },
