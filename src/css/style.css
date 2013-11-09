@@ -7,14 +7,28 @@
 
 @font-face {
   font-family: 'Roboto';
-  font-weight: normal;
+  font-weight: 900;
+  font-style: normal;
+  src: url(../font/Roboto-Bold.ttf);
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 600;
   font-style: normal;
   src: url(../font/Roboto-Medium.ttf);
 }
 
 @font-face {
   font-family: 'Roboto';
-  font-weight: lighter;
+  font-weight: 300;
+  font-style: normal;
+  src: url(../font/Roboto-Light.ttf);
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 100;
   font-style: normal;
   src: url(../font/Roboto-Thin.ttf);
 }
@@ -25,6 +39,9 @@ html, body, #stage {
   padding: 0;
 }
 
+p {
+  margin: 0;
+}
 body {
   background: #08D8D6;
   font-family: "Roboto";
@@ -37,12 +54,16 @@ body {
 
 .tt-dropdown-menu {
   background-color: #fff;
-  border: 1px solid #000;
   width: 100%;
 }
 
 .tt-suggestion.tt-is-under-cursor {
   background-color: #ccc;
+}
+
+.tt-suggestion {
+  border-bottom: solid 1px #5EB0B0;
+  padding: 5px;
 }
 
 .triggered-events {
@@ -51,26 +72,15 @@ body {
   height: 300px;
 }
 
-.startTime, .endTime {
-  width: 50%;
-}
-
-.startTime {
-  float: left;
+.time {
+  display: inline-block;
+  font-size: 12px;
 }
 
 .text {
-  font-size: 140%;
-  font-style: italic;
-  text-align: left;
-}
-
-.text:before {
-  content: "❝ ";
-}
-
-.text:after {
-  content: " ❞";
+  font-size: 15px;
+  color: #5EB0B0;
+  font-weight: 300;
 }
 
 input {

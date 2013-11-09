@@ -2,6 +2,7 @@ $(function() {
 
   function prepareTypeahead(file_name) {
     var fs = require('fs');
+    var moment = require('moment');
     var _ = require('lodash');
     var srt2data = require('subtitles-parser').fromSrt;
     var file_content = fs.readFileSync(file_name);
@@ -11,16 +12,22 @@ $(function() {
 
     $('.typeahead').typeahead({
       name: 'quotes',
-      limit: 12,
+      limit: 5,
       template: [
         '<p class="text">{{text}}</p>',
-        '<span class="startTime">{{startTime}}</span>',
-        '<span class="endTime">{{endTime}}</span>'
+        '<span class="time">{{startTimeStripped}} - {{endTimeStripped}} ({{duration}}s)</span>'
       ].join(''),
       engine: require('hogan.js'),
       local: _.map(quotes, function(srt_entry) {
+        var start = moment.duration(srt_entry.startTime).asMilliseconds();
+        var end = moment.duration(srt_entry.endTime).asMilliseconds();
+        var duration = (end - start) / 1000;
         _.extend(srt_entry, {
-          value: srt_entry.text
+          value: srt_entry.text,
+          text: srt_entry.text.replace(/<[^>]*>/g, ''),
+          startTimeStripped: moment(start).utc().format('HH:mm:ss'),
+          endTimeStripped: moment(end).utc().format('HH:mm:ss'),
+          duration: duration
         });
         return srt_entry;
       })
@@ -51,9 +58,8 @@ $(function() {
     var path = e.originalEvent.dataTransfer.files[0].path;
     var video = document.getElementById('video');
     stage.removeClass('drop').addClass('subtitles');
-    dropzone.removeClass('hover')
+    dropzone.removeClass('hover');
     prepareTypeahead(path);
-    console.log(path);
   }
 
   function hover() {
