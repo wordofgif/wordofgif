@@ -1,0 +1,21 @@
+{
+  "name": "witty-wizards",
+  "version": "0.0.0",
+  "homepage": "https://github.com/nko4/witty-wizards",
+  "authors": [
+    "wittywizards@nko4.nodeknockout.com"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.0.2",
+    "lodash": "~2.2.1"
+  }
+}
