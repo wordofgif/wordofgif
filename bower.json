@@ -16,6 +16,7 @@
   ],
   "dependencies": {
     "bootstrap": "~3.0.2",
-    "lodash": "~2.2.1"
+    "lodash": "~2.2.1",
+    "typeahead.js": "~0.9.3"
   }
 }
