@@ -14,7 +14,12 @@ $(function() {
 
     $('.typeahead').typeahead({
       name: 'quotes',
-      local: _.pluck(quotes, 'text')
+      local: _.map(quotes, function(srt_entry) {
+        _.extend(srt_entry, {
+          value: srt_entry.text,
+        });
+        return srt_entry;
+      })
     });
 
   })
