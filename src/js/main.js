@@ -1,11 +1,10 @@
 $(function() {
-  $('input').change(function() {
 
+  function prepareTypeahead(file_name) {
     var fs = require('fs');
     var _ = require('lodash');
     var srt2data = require('subtitles-parser').fromSrt;
 
-    var file_name = $(this).val();
 
     var file_content = fs.readFileSync(file_name);
 
@@ -20,7 +19,12 @@ $(function() {
         return srt_entry;
       })
     });
+  }
 
+
+  $('input').change(function() {
+    var file_name = $(this).val();
+    prepareTypeahead(file_name);
   });
 
   $(window)
@@ -40,8 +44,10 @@ $(function() {
     e.preventDefault();
     var path = e.originalEvent.dataTransfer.files[0].path;
     var video = document.getElementById('video');
-    console.log(path);
     stage.removeClass('drop').addClass('subtitles')
+
+    prepareTypeahead(path);
+    console.log(path);
   }
 
   function hover() {
