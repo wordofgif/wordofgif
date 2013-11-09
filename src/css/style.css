@@ -146,3 +146,20 @@ input {
 #stage.video #subtitles{
   height: 10%;
 }
+
+.bar {
+  position: relative;
+  width: 600px;
+  height: 15px;
+  display: inline-block;
+  background: #fff;
+}
+
+.tick{
+  position: absolute;
+  top: 0;
+  background: #0A807E;
+  height: 15px;
+  width: 2px;
+  margin-left: -2px;
+}

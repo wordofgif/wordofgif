@@ -40,7 +40,7 @@ $(function() {
           duration: duration,
           durationInSeconds: Math.floor(duration / 1000),
           startTimeParsed: start,
-          endTimeParsed:end
+          endTimeParsed: end
         });
         return srt_entry;
       })
@@ -54,6 +54,10 @@ $(function() {
   var dropzone = $('#dropzone');
   var stage = $('#stage');
   var video = $('#video');
+  var slider = $('.bar').noUiSlider({
+    range: [0, 100],
+    start: [0, 100]
+  });
 
   dropzone
     .on('dragover', hover)
@@ -83,10 +87,23 @@ $(function() {
     e.preventDefault();
   }
 
-  function addVideo (src) {
+  function addVideo(src) {
     stage.removeClass('subtitles').addClass('video');
     $('video').attr('src', src);
-    $('video')[0].play();
+    var video = $('video')[0];
+
+    video.play();
+    slider.val([0, 100]);
+    video.removeEventListener('timeupdate');
+    video.addEventListener('timeupdate', function() {
+      var value = 100 / video.duration * video.currentTime;
+      var sliderValues = slider.val();
+      if (value > sliderValues[1]) {
+        value = sliderValues[0];
+        video.currentTime = video.duration / 100 * value;
+      }
+      $('.tick').css('left', value + '%');
+    });
   }
 });
 
