@@ -1,4 +1,3 @@
-
 $(function() {
   $('input').change(function() {
 
@@ -16,20 +15,20 @@ $(function() {
       name: 'quotes',
       local: _.map(quotes, function(srt_entry) {
         _.extend(srt_entry, {
-          value: srt_entry.text,
+          value: srt_entry.text
         });
         return srt_entry;
       })
     });
 
-  })
+  });
 
   $(window)
     .on('dragover', stop)
     .on('drop', stop);
 
   var dropzone = $('#dropzone');
-
+  var stage = $('#stage');
   dropzone
     .on('dragover', hover)
     .on('dragleave', leave)
@@ -37,20 +36,20 @@ $(function() {
     .on('drop', ondrop);
 
 
-  
   function ondrop(e) {
     e.preventDefault();
     var path = e.originalEvent.dataTransfer.files[0].path;
     var video = document.getElementById('video');
     console.log(path);
+    stage.removeClass('drop').addClass('subtitles')
   }
 
   function hover() {
-    this.className = 'hover'
+    $(this).addClass('hover')
   }
 
   function leave() {
-    this.className = ''
+    $(this).removeClass('hover')
   }
 
   function stop(e) {

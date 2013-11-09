@@ -1,11 +1,9 @@
+html, body, #stage{
+  height: 100%;
+}
 
-
-#dropzone { border: 10px dashed #ccc; width: 300px; height: 300px; margin: 20px auto;}
-#dropzone.hover { border: 10px dashed #333; }
-
-.container {
-  width: 800px;
-  margin: 50px auto;
+body {
+  background: #08D8D6;
 }
 
 .typeahead-wrapper {
@@ -28,3 +26,47 @@
   height: 300px;
 }
 
+input{
+  border: solid 1px white;
+  outline: none;
+  font-size: 30px;
+  color: #0A807E;
+}
+
+#stage {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+.tab {
+  overflow: hidden;
+  -webkit-transition:  .5s ease-out;
+  text-align: center;
+}
+
+#stage.drop #subtitles {
+  height: 0;
+}
+
+#stage.subtitles #subtitles {
+  height: 90%;
+}
+
+#stage.subtitles #dropzone {
+  height: 10%;
+  border-width: 1px;
+  font-size: 36px;
+  font-weight: lighter;
+}
+
+#dropzone {
+  border: 10px dashed #fff;
+  width: 300px;
+  height: 300px;
+  margin: 20px auto;
+  color: #fff;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 85px;
+  overflow: hidden;
+}
