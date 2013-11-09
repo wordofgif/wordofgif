@@ -17,7 +17,6 @@
     "node": "0.10.x"
   },
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-node-webkit-builder": "~0.1.11"
+    "grunt": "~0.4.1"
   }
 }
