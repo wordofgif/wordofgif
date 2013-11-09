@@ -40,7 +40,7 @@ app.post('/upload', function(req, res){
 
     var form = r.form();
     
-    form.append('image', fs.createReadStream("test.png"/*req.files.image.path*/))
+    form.append('image', fs.createReadStream("star_wars.gif"/*req.files.image.path*/))
     form.append('title', 'TODO: titles')
     form.append('description', 'TODO: description')
     form.append('type', 'file')
