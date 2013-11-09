@@ -2,6 +2,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     nodewebkit: {
       options: {
+        version: '0.8.0',
         build_dir: './webkitbuilds', // Where the build version of my node-webkit app is saved
         mac: true, // We want to build it for mac
         win: true, // We want to build it for win
