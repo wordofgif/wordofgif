@@ -131,10 +131,18 @@ input {
   height: 90%;
 }
 
-#stage.subtitles #dropzone {
+#stage.subtitles #dropzone,
+#stage.video #dropzone {
   height: 10%;
   border-width: 1px;
   font-size: 36px;
   font-weight: lighter;
 }
 
+#stage.video #video{
+  height: 80%;
+}
+
+#stage.video #subtitles{
+  height: 10%;
+}

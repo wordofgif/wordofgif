@@ -56,6 +56,8 @@ $(function() {
 
   var dropzone = $('#dropzone');
   var stage = $('#stage');
+  var video = $('#video');
+
   dropzone
     .on('dragover', hover)
     .on('dragleave', leave)
@@ -70,6 +72,7 @@ $(function() {
     stage.removeClass('drop').addClass('subtitles');
     dropzone.removeClass('hover');
     prepareTypeahead(path);
+    addVideo('out.webm');
   }
 
   function hover() {
@@ -84,6 +87,11 @@ $(function() {
     e.preventDefault();
   }
 
+  function addVideo (src) {
+    stage.removeClass('subtitles').addClass('video');
+    $('video').attr('src', src);
+    $('video')[0].play();
+  }
 });
 
 
