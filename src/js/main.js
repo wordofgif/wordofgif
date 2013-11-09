@@ -50,8 +50,8 @@ $(function() {
     e.preventDefault();
     var path = e.originalEvent.dataTransfer.files[0].path;
     var video = document.getElementById('video');
-    stage.removeClass('drop').addClass('subtitles')
-
+    stage.removeClass('drop').addClass('subtitles');
+    dropzone.removeClass('hover')
     prepareTypeahead(path);
     console.log(path);
   }

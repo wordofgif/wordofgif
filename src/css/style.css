@@ -1,9 +1,33 @@
-html, body, #stage{
+@font-face {
+  font-family: 'Roboto';
+  font-weight: bold;
+  font-style: normal;
+  src: url(../font/Roboto-Bold.ttf);
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: normal;
+  font-style: normal;
+  src: url(../font/Roboto-Medium.ttf);
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: lighter;
+  font-style: normal;
+  src: url(../font/Roboto-Thin.ttf);
+}
+
+html, body, #stage {
   height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
   background: #08D8D6;
+  font-family: "Roboto";
 }
 
 .typeahead-wrapper {
@@ -40,14 +64,16 @@ body {
   font-style: italic;
   text-align: left;
 }
+
 .text:before {
   content: "❝ ";
 }
+
 .text:after {
   content: " ❞";
 }
 
-input{
+input {
   border: solid 1px white;
   outline: none;
   font-size: 30px;
@@ -59,13 +85,35 @@ input{
   -webkit-box-orient: vertical;
 }
 
-.tab {
+#dropzone {
+  border: 10px dashed #fff;
+  width: 300px;
+  height: 300px;
+  margin: 10px auto;
+  color: #fff;
+  font-weight: bold;
+  font-size: 73px;
   overflow: hidden;
-  -webkit-transition:  .5s ease-out;
   text-align: center;
 }
 
-#stage.drop #subtitles {
+#dropzone.hover {
+  border-color: #0A807E;
+  color: #0A807E;
+}
+
+.tab {
+  overflow: hidden;
+  -webkit-transition: .5s ease-out;
+  text-align: center;
+}
+
+#stage.drop #dropzone {
+  margin-top: 87px;
+}
+
+#stage.drop #subtitles,
+#stage.drop #video {
   height: 0;
 }
 
@@ -80,14 +128,3 @@ input{
   font-weight: lighter;
 }
 
-#dropzone {
-  border: 10px dashed #fff;
-  width: 300px;
-  height: 300px;
-  margin: 20px auto;
-  color: #fff;
-  font-family: sans-serif;
-  font-weight: bold;
-  font-size: 85px;
-  overflow: hidden;
-}
