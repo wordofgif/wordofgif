@@ -15,7 +15,7 @@
     "lodash": "~2.2.1",
     "moment": "~2.4.0",
     "hogan.js": "~2.0.0",
-    "moment": "~2.4.0"
+    "subtitles-parser": "0.0.2"
   },
   "engines": {
     "node": "0.10.x"
