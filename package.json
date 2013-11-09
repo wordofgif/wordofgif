@@ -11,7 +11,8 @@
     "url": "git@github.com:nko4/witty-wizards.git"
   },
   "dependencies": {
-    "nko": "*"
+    "nko": "*",
+    "lodash": "~2.2.1"
   },
   "engines": {
     "node": "0.10.x"
