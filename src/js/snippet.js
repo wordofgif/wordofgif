@@ -1,5 +1,7 @@
-var moment = require('moment')
+var moment = require('moment');
 var process = require('child_process');
+var fs = require('fs');
+
 
 function toTimestamp(milis) {
   return moment(milis).utc().format('HH:mm:ss.SSS');
@@ -10,6 +12,10 @@ function preview(videoFilename, subtitleFilename, startOffset, duration, cb) {
   var codec = "libvpx";
   var output = "out.webm";
   var inaccuracyPeriod = 30 * 1000;
+
+  if (fs.existsSync(output)) {
+    fs.unlinkSync(output);
+  }
 
   // figure out fast vs. accurate seeking
   var accurateSeekingStart;
@@ -35,7 +41,9 @@ function preview(videoFilename, subtitleFilename, startOffset, duration, cb) {
   // call callback, when done
   ffmpeg.on('close', function (code) {
     console.log('child process exited with code ' + code);
-    //cb(code);
+    if (cb) {
+      cb(code);
+    }
   });
 
   // debug prints

@@ -5,10 +5,18 @@ $(function() {
     var moment = require('moment');
     var _ = require('lodash');
     var srt2data = require('subtitles-parser').fromSrt;
+    var preview = require('./js/snippet').preview;
+
     var file_content = fs.readFileSync(file_name);
     var quotes = srt2data(file_content.toString());
 
     console.log(quotes);
+    $('.typeahead').on('typeahead:selected', function(ev, context) {
+      console.log(context);
+      preview(file_name.replace("srt", "avi"), file_name.replace("avi", "srt"), context.startTimeParsed, context.duration * 1000, function() {
+        //console.log(this, arguments);
+      });
+    });
 
     $('.typeahead').typeahead({
       name: 'quotes',
@@ -27,7 +35,9 @@ $(function() {
           text: srt_entry.text.replace(/<[^>]*>/g, ''),
           startTimeStripped: moment(start).utc().format('HH:mm:ss'),
           endTimeStripped: moment(end).utc().format('HH:mm:ss'),
-          duration: duration
+          duration: duration,
+          startTimeParsed: start,
+          endTimeParsed:end
         });
         return srt_entry;
       })
