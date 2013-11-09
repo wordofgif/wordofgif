@@ -18,19 +18,18 @@ var imgurUploadOptions = {
 }
 
 var app = express();
+app.use(express.bodyParser({keepExtensions: true}));
 
 app.get('/',function (req, res) {
   // http://blog.nodeknockout.com/post/35364532732/protip-add-the-vote-ko-badge-to-your-app
-  var voteko = '<iframe src="http://nodeknockout.com/iframe/witty-wizards" frameborder=0 scrolling=no allowtransparency=true width=115 height=25></iframe>';
-
-  res.writeHead(200, {'Content-Type': 'text/html'});
-  res.end('<html><body>' + voteko + '</body></html>\n');
+  res.sendfile('index.html')
 })
 
 app.post('/upload', function(req, res){
 
     console.log("upload image");
     console.log("files: "+req.files);
+    console.log("path: "+req.files.image.path);
 
     var r = request.post(imgurUploadOptions, function(e, r, rbody){
         console.log("e: "+e);
@@ -40,7 +39,7 @@ app.post('/upload', function(req, res){
 
     var form = r.form();
     
-    form.append('image', fs.createReadStream("test.png"/*req.files.image.path*/))
+    form.append('image', fs.createReadStream(req.files.image.path))
     form.append('title', 'TODO: titles')
     form.append('description', 'TODO: description')
     form.append('type', 'file')
