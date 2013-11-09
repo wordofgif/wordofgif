@@ -15,6 +15,7 @@ $(function() {
       console.log(context);
       preview(file_name.replace("srt", "avi"), file_name.replace("avi", "srt"), context.startTimeParsed, context.duration * 1000, function() {
         //console.log(this, arguments);
+        addVideo('out.webm');
       });
     });
 
@@ -72,7 +73,6 @@ $(function() {
     stage.removeClass('drop').addClass('subtitles');
     dropzone.removeClass('hover');
     prepareTypeahead(path);
-    addVideo('out.webm');
   }
 
   function hover() {
