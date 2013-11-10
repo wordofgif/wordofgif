@@ -22,11 +22,14 @@ function removeFileSync(filename) {
 }
 
 function runProcess(executable, args, cb) {
-  console.log("invoking", executable, "with:", args.join(" "));
+  var binPath = sh.pwd() + '/vendor/bin/osx/';
+  // hack: files are bundled with 444
+  sh.chmod(755, binPath + executable);
+  console.log("invoking", binPath, executable, "with:", args.join(" "));
   var process = child_process.execFile(executable, args, {
     env: {
-      DYLD_LIBRARY_PATH: sh.pwd() + '/vendor/bin/osx/',
-      PATH:sh.pwd() + '/vendor/bin/osx/',
+      DYLD_LIBRARY_PATH: binPath,
+      PATH: binPath,
     }
   });
 
