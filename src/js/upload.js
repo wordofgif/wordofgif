@@ -1,6 +1,5 @@
 var request = require('request');
 var fs = require('fs');
-var module = require('module');
 //var util = require('util');
 
 function upload(path, text){

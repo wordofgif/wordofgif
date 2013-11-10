@@ -3,6 +3,10 @@ $(function() {
   var moment = require('moment');
   var subtitles_parser = require('subtitles-parser');
   var tmp = require('temporary');
+	var preview = require('./js/snippet').preview;
+	var snippet = require('./js/snippet');
+	var fs = require('fs')
+	var uploadToImgur = require('./js/upload').upload
 
   function parseSrtTime(string) {
     return moment.duration(string.replace(",", ".")).asMilliseconds()
@@ -15,7 +19,6 @@ $(function() {
   function prepareTypeahead(file_name) {
     var fs = require('fs');
     var _ = require('lodash');
-    var preview = require('./js/snippet').preview;
 
     var getSeekingStart = require('./js/snippet').getSeekingStart;
 
@@ -75,6 +78,10 @@ $(function() {
         context.duration,
         addVideo
       );
+
+			//TODO avoid rendering anew for each call to upload or download
+			$("#saveButton").off('click').click(function(){download(file_name, shifted_subtitles_file.path, context.startTimeParsed, context.duration)})
+			$("#uploadButton").off('click').click(function(){upload(file_name, shifted_subtitles_file.path, context.startTimeParsed, context.duration, "words of GIF")})
     });
 
     $('.typeahead').typeahead({
@@ -168,23 +175,47 @@ $(function() {
     });
   }
 
-  function download(){
-		console.log("download")
-     var chooser = $("#fileDialog");
-     chooser.change(function(evt) {
-         console.log("file chosen: "+$(this).val());
-       });
+  function download(videoPath, shifted_subtitles_file_path, startTimeParsed, duration){
 
-     chooser.trigger('click');  
-  }
+		console.log("download video: "+videoPath+", subfile: "+shifted_subtitles_file_path+", startTime: "+startTimeParsed+", duration: "+duration)
 
-  function upload(){
+		snippet.render(
+			videoPath.replace("srt", "avi"),
+			shifted_subtitles_file_path,
+			startTimeParsed,
+			duration,
+			function(gif){
+				console.log("gif rendered to "+gif.path)
+				var chooser = $("#fileDialog");
+				chooser.change(function(evt) {
+						path = $(this).val()
+						console.log("move "+gif.path+"to "+path);
+						fs.renameSync(gif.path, path)
+					});
 
+				chooser.trigger('click');  
+
+			}
+		);
+	}
+
+  function upload(videoPath, shifted_subtitles_file_path, startTimeParsed, duration, subtitles){
+		console.log("upload video: "+videoPath+", subfile: "+shifted_subtitles_file_path+", startTime: "+startTimeParsed+", duration: "+duration+", subs: "+subtitles)
+
+		snippet.render(
+			videoPath.replace("srt", "avi"),
+			shifted_subtitles_file_path,
+			startTimeParsed,
+			duration,
+			function(gif){
+				console.log("gif rendered to "+gif.path)
+
+				uploadToImgur(gif.path, subtitles)
+			}
+		)
   }
 
   
-  $("#saveButton").click(download)
-  $("#uploadButton").click(upload)
 });
 
 
