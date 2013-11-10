@@ -69,7 +69,7 @@ $(function() {
         subtitles_parser.toSrt(get_quotes_with_offset(getSeekingStart(context.startTimeParsed).accurateSeekingStart))
       )
       preview(
-        file_name.replace("srt", "avi"),
+        files.videoPath,
         shifted_subtitles_file.path,
         context.startTimeParsed,
         context.duration,
