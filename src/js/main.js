@@ -169,6 +169,7 @@ $(function() {
   }
 
   function download(){
+		console.log("download")
      var chooser = $("#fileDialog");
      chooser.change(function(evt) {
          console.log("file chosen: "+$(this).val());
@@ -182,7 +183,7 @@ $(function() {
   }
 
   
-  $("#downloadButton").click(download)
+  $("#saveButton").click(download)
   $("#uploadButton").click(upload)
 });
 
