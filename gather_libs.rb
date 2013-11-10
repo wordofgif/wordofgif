@@ -29,3 +29,4 @@ end
 
 installer = Installer.new
 installer.install_binary('ffmpeg')
+installer.install_binary('convert')

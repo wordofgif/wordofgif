@@ -66,13 +66,13 @@ $(function() {
 
     $('.typeahead').on('typeahead:selected', function(ev, context) {
       console.log(context);
-
+      startVideoProcessing();
       var shifted_subtitles_file = new tmp.File('srt');
       shifted_subtitles_file.writeFileSync(
         subtitles_parser.toSrt(get_quotes_with_offset(getSeekingStart(context.startTimeParsed).accurateSeekingStart))
       )
       preview(
-        file_name.replace("srt", "avi"),
+        files.videoPath,
         shifted_subtitles_file.path,
         context.startTimeParsed,
         context.duration,
@@ -92,7 +92,7 @@ $(function() {
         '<span class="time">{{startTimeStripped}} - {{endTimeStripped}} ({{durationInSeconds}}s)</span>'
       ].join(''),
       engine: require('hogan.js'),
-      local: _.map(quotes, function(srt_entry) {
+      local: _.shuffle(_.map(quotes, function(srt_entry) {
         var start = parseSrtTime(srt_entry.startTime);
         var end = parseSrtTime(srt_entry.endTime);
         var duration = (end - start);
@@ -110,7 +110,7 @@ $(function() {
           endTimeParsed: end
         });
         return context;
-      })
+      }))
     });
   }
 
@@ -155,10 +155,12 @@ $(function() {
   function stop(e) {
     e.preventDefault();
   }
+  function startVideoProcessing () {
+    stage.removeClass('subtitles').addClass('loading');  }
 
   function addVideo(src) {
-    stage.removeClass('subtitles').addClass('video');
     $('video').attr('src', src.path);
+    stage.removeClass('loading').addClass('video');
     var video = $('video')[0];
 
     video.play();
