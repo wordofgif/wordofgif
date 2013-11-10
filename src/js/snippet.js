@@ -7,6 +7,10 @@ function toTimestamp(milis) {
   return moment(milis).utc().format('HH:mm:ss.SSS');
 }
 
+function escapeFilename(filename) {
+  return filename.replace(/\[/g, '\\[').replace(/\]/g, '\\]');
+}
+
 function preview(videoFilename, subtitleFilename, startOffset, duration, cb) {
   // constants
   var codec = "libvpx";
@@ -33,10 +37,10 @@ function preview(videoFilename, subtitleFilename, startOffset, duration, cb) {
     "-c:v", codec,
     "-ss", toTimestamp(startOffset),
     "-t", toTimestamp(duration),
-    "-vf", "subtitles="+subtitleFilename,
+    "-vf", "subtitles="+escapeFilename(subtitleFilename),
     output ];
   console.log(args);
-  var ffmpeg = process.spawn('ffmpeg', args);
+  var ffmpeg = process.execFile('ffmpeg', args);
 
   // call callback, when done
   ffmpeg.on('close', function (code) {
