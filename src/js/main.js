@@ -73,6 +73,8 @@ $(function() {
     stage.removeClass('drop').addClass('subtitles');
     dropzone.removeClass('hover');
     prepareTypeahead(path);
+    window.focus();
+    $('.typeahead').focus();
   }
 
   function hover() {
