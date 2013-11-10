@@ -21,7 +21,12 @@ function removeFileSync(filename) {
 
 function runProcess(executable, args, cb) {
   console.log("invoking", executable, "with:", args.join(" "));
-  var process = child_process.execFile(executable, args);
+  var process = child_process.execFile(executable, args, {
+    env: {
+      DYLD_LIBRARY_PATH: sh.pwd() + '/vendor/bin/osx/',
+      PATH:sh.pwd() + '/vendor/bin/osx/',
+    }
+  });
 
   // call callback, when done
   process.on('close', function (code) {
