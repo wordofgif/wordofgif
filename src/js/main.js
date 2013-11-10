@@ -197,7 +197,7 @@ $(function() {
 						fs.renameSync(gif.path, path)
 					});
 
-				chooser.trigger('click');  
+				chooser.trigger('click');
 
 			}
 		);
@@ -205,7 +205,6 @@ $(function() {
 
   function upload(videoPath, shifted_subtitles_file_path, startTimeParsed, duration, subtitles){
 		console.log("upload video: "+videoPath+", subfile: "+shifted_subtitles_file_path+", startTime: "+startTimeParsed+", duration: "+duration+", subs: "+subtitles)
-
 		snippet.render(
 			videoPath.replace("srt", "avi"),
 			shifted_subtitles_file_path,
@@ -226,7 +225,15 @@ $(function() {
 		)
   }
 
-  
+  function showImgurUrl(url) {
+    $('.imgur-url').show().text(url);
+  }
+
+  function showError(error) {
+    $('.imgur-url').addClass('error').show().text(url);
+  }
+
+
 });
 
 
