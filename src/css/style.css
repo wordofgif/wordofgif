@@ -163,3 +163,7 @@ input {
   width: 2px;
   margin-left: -2px;
 }
+
+.noUi-handle {
+  cursor: col-resize !important;
+}
