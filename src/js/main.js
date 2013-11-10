@@ -6,14 +6,19 @@ $(function() {
     var _ = require('lodash');
     var srt2data = require('subtitles-parser').fromSrt;
     var preview = require('./js/snippet').preview;
-
-    var file_content = fs.readFileSync(file_name);
+    var findFile = require('./js/findFiles');
+    var files = findFile(file_name);
+    if (files.error) {
+      alert(files.error);
+      return;
+    }
+    var file_content = fs.readFileSync(files.subTitlePath);
     var quotes = srt2data(file_content.toString());
-
+    console.log(files);
     console.log(quotes);
     $('.typeahead').on('typeahead:selected', function(ev, context) {
       console.log(context);
-      preview(file_name.replace("srt", "avi"), file_name.replace("avi", "srt"), context.startTimeParsed, context.duration, addVideo);
+      preview(files.videoPath, files.subTitlePath, context.startTimeParsed, context.duration, addVideo);
     });
 
     $('.typeahead').typeahead({
