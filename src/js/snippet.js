@@ -1,6 +1,7 @@
 var moment = require('moment');
 var process = require('child_process');
 var fs = require('fs');
+var tmp = require('temporary');
 
 
 function toTimestamp(milis) {
@@ -17,9 +18,24 @@ function removeFileSync(filename) {
   }
 }
 
-function FFmpegArgs(videoFilename, subtitleFilename, startOffset, duration) {
+function invokeOnExitOf(process, cb) {
+  // call callback, when done
+  process.on('close', function (code) {
+    console.log('child process exited with code ' + code);
+    cb(code);
+  });
+
+  // debug prints
+  process.stdout.on('data', function (data) {
+    console.log('stdout: ' + data);
+  });
+  process.stderr.on('data', function (data) {
+    console.log('stderr: ' + data);
+  });
+}
+
+function FFmpegArgs(videoFilename, subtitleFilename, codec, startOffset, duration) {
   // constants
-  var codec = "libvpx";
   var inaccuracyPeriod = 30 * 1000;
 
   // figure out fast vs. accurate seeking
@@ -47,27 +63,30 @@ function preview(videoFilename, subtitleFilename, startOffset, duration, cb) {
   removeFileSync(output);
 
   // spawn ffmpeg process
-  var args = FFmpegArgs(videoFilename, subtitleFilename, startOffset, duration);
+  var args = FFmpegArgs(videoFilename, subtitleFilename, "libvpx", startOffset, duration);
   args.push(output);
-  console.log("invoking ffmpeg with:", args);
+  console.log("invoking ffmpeg with:", args.join(" "));
   var ffmpeg = process.execFile('ffmpeg', args);
 
-  // call callback, when done
-  ffmpeg.on('close', function (code) {
-    console.log('child process exited with code ' + code);
-    if (cb) {
-      cb(code);
-    }
-  });
-
-  // debug prints
-  ffmpeg.stdout.on('data', function (data) {
-    console.log('stdout: ' + data);
-  });
-  ffmpeg.stderr.on('data', function (data) {
-    console.log('stderr: ' + data);
+  invokeOnExitOf(ffmpeg, function(code) {
+    if (cb) { cb(code); }
   });
 }
 
-module.exports = { "preview": preview };
+function render(videoFilename, subtitleFilename, startOffset, duration, cb) {
+  var dir = new tmp.Dir();
+
+  // spawn ffmpeg process
+  var args = FFmpegArgs(videoFilename, subtitleFilename, "png", startOffset, duration);
+  args = args.concat(["-s", "480x270", "-f", "image2", dir.path + "/%03d.png"]);
+  console.log("invoking ffmpeg with:", args.join(" "));
+  var ffmpeg = process.execFile('ffmpeg', args);
+
+  invokeOnExitOf(ffmpeg, function(code) {
+    console.log('child process exited with code:', code, 'files saved to:', dir);
+    if (cb) { cb(code); }
+  });
+}
+
+module.exports = { "preview": preview, "render": render };
 
