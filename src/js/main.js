@@ -16,9 +16,16 @@ $(function() {
     var fs = require('fs');
     var _ = require('lodash');
     var preview = require('./js/snippet').preview;
+
     var getSeekingStart = require('./js/snippet').getSeekingStart;
 
-    var file_content = fs.readFileSync(file_name);
+    var findFile = require('./js/findFiles');
+    var files = findFile(file_name);
+    if (files.error) {
+      alert(files.error);
+      return;
+    }
+    var file_content = fs.readFileSync(files.subTitlePath);
     var quotes = subtitles_parser.fromSrt(file_content.toString());
 
     var get_quotes_with_offset = function(offset) {
@@ -50,6 +57,9 @@ $(function() {
       })
 
     }
+
+    console.log(files);
+    console.log(quotes);
 
     $('.typeahead').on('typeahead:selected', function(ev, context) {
       console.log(context);
