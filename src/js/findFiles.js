@@ -8,7 +8,7 @@ function findFile(path) {
   var videoPath;
   var subtitlePath;
   console.log(fileName);
-  if (extension.match(/avi|mpeg/)) {
+  if (extension.match(/avi|mpeg|mpg|mp4|mkv/)) {
     videoPath = path;
     if (fs.existsSync(fileName) + '.srt') {
       subtitlePath = fileName + '.srt';
