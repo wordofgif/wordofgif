@@ -4,6 +4,7 @@ var fs = require('fs');
 var tmp = require('temporary');
 var sh = require('shelljs');
 var _ = require('lodash');
+var rimraf = require('rimraf');
 
 
 function toTimestamp(milis) {
@@ -114,7 +115,7 @@ function render(videoFilename, subtitleFilename, startOffset, duration, cb) {
 
     // spawn imagemagick convert process
     runProcess('convert', argsConvert, function() {
-      dir.rmdir();
+      rimraf.sync(dir.path);
       if (cb) { cb(output); }
     });
   });
