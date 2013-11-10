@@ -2,6 +2,16 @@ var request = require('request');
 var fs = require('fs');
 //var util = require('util');
 
+var imgurUploadPath = 'https://api.imgur.com/3/image';
+
+var imgurUploadOptions = {
+  url: imgurUploadPath,
+  headers: {
+    Authorization: 'Client-ID 7bc6ef5e4ecf6b2'
+  }
+}
+
+
 function upload(path, text){
   var r = request.post(imgurUploadOptions, function(e, r, rbody){
       //console.log("e: "+e);
