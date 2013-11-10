@@ -1,7 +1,8 @@
 var moment = require('moment');
-var process = require('child_process');
+var child_process = require('child_process');
 var fs = require('fs');
 var tmp = require('temporary');
+var sh = require('shelljs');
 
 
 function toTimestamp(milis) {
@@ -18,11 +19,15 @@ function removeFileSync(filename) {
   }
 }
 
-function invokeOnExitOf(process, cb) {
+function runProcess(executable, args, cb) {
+  console.log("invoking", executable, "with:", args.join(" "));
+  var process = child_process.execFile(executable, args);
+
   // call callback, when done
   process.on('close', function (code) {
     console.log('child process exited with code ' + code);
-    cb(code);
+    if (code == 0)
+      cb();
   });
 
   // debug prints
@@ -67,17 +72,15 @@ function FFmpegArgs(videoFilename, subtitleFilename, codec, startOffset, duratio
 }
 
 function preview(videoFilename, subtitleFilename, startOffset, duration, cb) {
-  var output = "out.webm";
-  removeFileSync(output);
+  var output = new tmp.File();
+  output.path += ".webm";
 
   // spawn ffmpeg process
   var args = FFmpegArgs(videoFilename, subtitleFilename, "libvpx", startOffset, duration);
-  args.push(output);
-  console.log("invoking ffmpeg with:", args.join(" "));
-  var ffmpeg = process.execFile('ffmpeg', args);
+  args.push(output.path);
 
-  invokeOnExitOf(ffmpeg, function(code) {
-    if (cb) { cb(code); }
+  runProcess('ffmpeg', args, function() {
+    if (cb) { cb(output); }
   });
 }
 
@@ -85,14 +88,23 @@ function render(videoFilename, subtitleFilename, startOffset, duration, cb) {
   var dir = new tmp.Dir();
 
   // spawn ffmpeg process
-  var args = FFmpegArgs(videoFilename, subtitleFilename, "png", startOffset, duration);
-  args = args.concat(["-s", "480x270", "-f", "image2", dir.path + "/%03d.png"]);
-  console.log("invoking ffmpeg with:", args.join(" "));
-  var ffmpeg = process.execFile('ffmpeg', args);
+  var argsFFmpeg = FFmpegArgs(videoFilename, subtitleFilename, "png", startOffset, duration);
+  argsFFmpeg = argsFFmpeg.concat(["-s", "480x270", "-f", "image2", "-r", 8, dir.path + "/%03d.png"]);
 
-  invokeOnExitOf(ffmpeg, function(code) {
-    console.log('child process exited with code:', code, 'files saved to:', dir);
-    if (cb) { cb(code); }
+  runProcess('ffmpeg', argsFFmpeg, function() {
+    console.log('ffmpeg process finished. files saved to:', dir);
+    var output = tmp.File();
+    output.path += ".gif";
+
+    argsConvert = ["+dither", "-fuzz", "3%", "-delay", "1x8"]
+    argsConvert = argsConvert.concat(sh.ls())
+    argsConvert = argsConvert.concat(["-coalesce", "-layers", "OptimizeTransparency", output.path])
+
+    // spawn imagemagick convert process
+    runProcess('convert', argsConvert, function() {
+      dir.rmdir();
+      if (cb) { cb(output); }
+    });
   });
 }
 
