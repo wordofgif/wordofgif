@@ -3,6 +3,7 @@ require('nko')('7jLaz2Fmg7i-TH4k');
 var express = require('express');
 var request = require('request');
 var fs = require('fs');
+var util = require('util');
 
 var isProduction = (process.env.NODE_ENV === 'production');
 var http = require('http');
@@ -32,9 +33,25 @@ app.post('/upload', function(req, res){
     console.log("path: "+req.files.image.path);
 
     var r = request.post(imgurUploadOptions, function(e, r, rbody){
-        console.log("e: "+e);
-        console.log("r: "+r);
-        console.log("rbody: "+rbody);
+        //console.log("e: "+e);
+        //console.log("r: "+r);
+        //console.log("rbody: "+rbody);
+       
+        if(rbody){
+          var body = JSON.parse(rbody)
+          //console.log("body: "+util.inspect(body))
+          if(body.success){
+            //console.log("success")
+            var url = body.data.link
+            res.json({url: url})
+          } else {
+            //console.log("error")
+            res.json(body.status, {error: body.data.error}) 
+          }
+        } else {
+          //console.log("unknown error")
+          res.send(500, {error: 'something blew up'})
+        } 
       });
 
     var form = r.form();
@@ -44,7 +61,6 @@ app.post('/upload', function(req, res){
     form.append('description', 'TODO: description')
     form.append('type', 'file')
 
-    res.send("super");
   })
 
 
