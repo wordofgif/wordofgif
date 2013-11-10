@@ -1,11 +1,24 @@
 $(function() {
 
+  var moment = require('moment');
+  var subtitles_parser = require('subtitles-parser');
+  var tmp = require('temporary');
+
+  function parseSrtTime(string) {
+    return moment.duration(string.replace(",", ".")).asMilliseconds()
+  }
+
+  function formatSrtTime(millis) {
+    return moment(millis).utc().format("HH:mm:ss,SSS")
+  }
+
   function prepareTypeahead(file_name) {
     var fs = require('fs');
-    var moment = require('moment');
     var _ = require('lodash');
-    var srt2data = require('subtitles-parser').fromSrt;
     var preview = require('./js/snippet').preview;
+
+    var getSeekingStart = require('./js/snippet').getSeekingStart;
+
     var findFile = require('./js/findFiles');
     var files = findFile(file_name);
     if (files.error) {
@@ -13,12 +26,55 @@ $(function() {
       return;
     }
     var file_content = fs.readFileSync(files.subTitlePath);
-    var quotes = srt2data(file_content.toString());
+    var quotes = subtitles_parser.fromSrt(file_content.toString());
+
+    var get_quotes_with_offset = function(offset) {
+
+      console.log('shifting by', offset, 'milliseconds (', formatSrtTime(offset), ')');
+
+      return _.map(quotes, function(srt_entry) {
+
+        var shifted_start = parseSrtTime(srt_entry.startTime) - offset;
+        var shifted_end = parseSrtTime(srt_entry.endTime) - offset;
+
+        if (shifted_start < 0 || shifted_end < 0) {
+          return -1;
+        }
+
+        _.extend(srt_entry, {
+          startTime: formatSrtTime(shifted_start),
+          endTime: formatSrtTime(shifted_end)
+        })
+
+        return srt_entry;
+      }).filter(function(entry) {
+        return entry != -1;
+      }).map(function(srt_entry, index) {
+        _.extend(srt_entry, {
+          id: ""+ (index + 1)
+        });
+        return srt_entry;
+      })
+
+    }
+
     console.log(files);
     console.log(quotes);
+
     $('.typeahead').on('typeahead:selected', function(ev, context) {
       console.log(context);
-      preview(files.videoPath, files.subTitlePath, context.startTimeParsed, context.duration, addVideo);
+
+      var shifted_subtitles_file = new tmp.File('srt');
+      shifted_subtitles_file.writeFileSync(
+        subtitles_parser.toSrt(get_quotes_with_offset(getSeekingStart(context.startTimeParsed).accurateSeekingStart))
+      )
+      preview(
+        file_name.replace("srt", "avi"),
+        shifted_subtitles_file.path,
+        context.startTimeParsed,
+        context.duration,
+        addVideo
+      );
     });
 
     $('.typeahead').typeahead({
@@ -30,11 +86,13 @@ $(function() {
       ].join(''),
       engine: require('hogan.js'),
       local: _.map(quotes, function(srt_entry) {
-        var start = moment.duration(srt_entry.startTime.replace(",", ".")).asMilliseconds();
-        var end = moment.duration(srt_entry.endTime.replace(",", ".")).asMilliseconds();
+        var start = parseSrtTime(srt_entry.startTime);
+        var end = parseSrtTime(srt_entry.endTime);
         var duration = (end - start);
 
-        _.extend(srt_entry, {
+        var context = {}
+
+        _.extend(context, srt_entry, {
           value: srt_entry.text,
           text: srt_entry.text.replace(/<[^>]*>/g, ''),
           startTimeStripped: moment(start).utc().format('HH:mm:ss'),
@@ -44,7 +102,7 @@ $(function() {
           startTimeParsed: start,
           endTimeParsed: end
         });
-        return srt_entry;
+        return context;
       })
     });
   }

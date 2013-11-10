@@ -34,7 +34,7 @@ function invokeOnExitOf(process, cb) {
   });
 }
 
-function FFmpegArgs(videoFilename, subtitleFilename, codec, startOffset, duration) {
+function getSeekingStart(startOffset) {
   // constants
   var inaccuracyPeriod = 30 * 1000;
 
@@ -47,11 +47,19 @@ function FFmpegArgs(videoFilename, subtitleFilename, codec, startOffset, duratio
      accurateSeekingStart = 0;
   }
 
+  return {
+    accurateSeekingStart:accurateSeekingStart,
+    startOffset:startOffset,
+  }
+
+}
+
+function FFmpegArgs(videoFilename, subtitleFilename, codec, startOffset, duration) {
   var args = [
-    "-ss", toTimestamp(accurateSeekingStart),
+    "-ss", toTimestamp(getSeekingStart(startOffset).accurateSeekingStart),
     "-i", videoFilename,
     "-c:v", codec,
-    "-ss", toTimestamp(startOffset),
+    "-ss", toTimestamp(getSeekingStart(startOffset).startOffset),
     "-t", toTimestamp(duration),
     "-vf", "subtitles="+escapeFilename(subtitleFilename),
   ];
@@ -88,5 +96,5 @@ function render(videoFilename, subtitleFilename, startOffset, duration, cb) {
   });
 }
 
-module.exports = { "preview": preview, "render": render };
+module.exports = { "preview": preview, "render": render, "getSeekingStart": getSeekingStart };
 
