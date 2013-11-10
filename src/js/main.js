@@ -7,6 +7,7 @@ $(function() {
 	var snippet = require('./js/snippet');
 	var fs = require('fs')
 	var uploadToImgur = require('./js/upload').upload
+	var util = require('util');
 
   function parseSrtTime(string) {
     return moment.duration(string.replace(",", ".")).asMilliseconds()
@@ -212,7 +213,14 @@ $(function() {
 			function(gif){
 				console.log("gif rendered to "+gif.path)
 
-				uploadToImgur(gif.path, subtitles)
+				uploadToImgur(gif.path, subtitles, function(result){
+						if(result.success){
+							console.log("uploaded to "+result.url)
+							//showUrl(result.url)
+						} else {
+							console.log("error: "+util.inspect(result.error))	
+						}
+					})
 			}
 		)
   }

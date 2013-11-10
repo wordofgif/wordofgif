@@ -12,7 +12,8 @@ var imgurUploadOptions = {
 }
 
 
-function upload(path, text){
+function upload(path, text, urlCallback){
+  console.log("upload")
   var r = request.post(imgurUploadOptions, function(e, r, rbody){
       //console.log("e: "+e);
       //console.log("r: "+r);
@@ -24,14 +25,14 @@ function upload(path, text){
         if(body.success){
           //console.log("success")
           var url = body.data.link
-          return {url: url, sucess: true}
+          urlCallback({url: url, success: true})
         } else {
-          //console.log("error")
-          return {success: false, error: "upload failed, imgur returned "+body.status+", error: "+body.data.error} 
+          //console.log("error: "+body.data.error)
+          urlCallback({success: false, error: "upload failed, imgur returned "+body.status+", error: "+body.data.error})
         }
       } else {
         //console.log("unknown error")
-        return {success: false, error: "unknown error: "+e}
+        urlCallback({success: false, error: "unknown error: "+e})
       } 
     });
 
