@@ -85,7 +85,7 @@ $(function() {
         '<span class="time">{{startTimeStripped}} - {{endTimeStripped}} ({{durationInSeconds}}s)</span>'
       ].join(''),
       engine: require('hogan.js'),
-      local: _.map(quotes, function(srt_entry) {
+      local: _.shuffle(_.map(quotes, function(srt_entry) {
         var start = parseSrtTime(srt_entry.startTime);
         var end = parseSrtTime(srt_entry.endTime);
         var duration = (end - start);
@@ -103,7 +103,7 @@ $(function() {
           endTimeParsed: end
         });
         return context;
-      })
+      }))
     });
   }
 
