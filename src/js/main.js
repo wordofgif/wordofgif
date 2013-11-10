@@ -63,7 +63,7 @@ $(function() {
 
     $('.typeahead').on('typeahead:selected', function(ev, context) {
       console.log(context);
-
+      startVideoProcessing();
       var shifted_subtitles_file = new tmp.File('srt');
       shifted_subtitles_file.writeFileSync(
         subtitles_parser.toSrt(get_quotes_with_offset(getSeekingStart(context.startTimeParsed).accurateSeekingStart))
@@ -75,6 +75,7 @@ $(function() {
         context.duration,
         addVideo
       );
+
     });
 
     $('.typeahead').typeahead({
@@ -148,10 +149,12 @@ $(function() {
   function stop(e) {
     e.preventDefault();
   }
+  function startVideoProcessing () {
+    stage.removeClass('subtitles').addClass('loading');  }
 
   function addVideo(src) {
-    stage.removeClass('subtitles').addClass('video');
     $('video').attr('src', src.path);
+    stage.removeClass('loading').addClass('video');
     var video = $('video')[0];
 
     video.play();
