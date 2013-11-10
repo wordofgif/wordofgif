@@ -6,11 +6,14 @@ var isProduction = (process.env.NODE_ENV === 'production');
 var port = (isProduction ? 80 : 8000);
 
 var app = express();
+app.use(express.logger());
+app.use(app.router);
 app.use('/page', express.static('page'));
-app.use(express.bodyParser({keepExtensions: true}));
 
 app.get('/',function (req, res) {
   res.sendfile('index.html')
 })
 
-app.listen(port);
+app.listen(port, function  () {
+  console.log('server running at port' + port);
+});
