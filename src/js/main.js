@@ -14,8 +14,6 @@ $(function() {
     $('.typeahead').on('typeahead:selected', function(ev, context) {
       console.log(context);
       preview(file_name.replace("srt", "avi"), file_name.replace("avi", "srt"), context.startTimeParsed, context.duration, function() {
-        //console.log(this, arguments);
-        addVideo('out.webm');
       });
     });
 

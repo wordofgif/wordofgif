@@ -1,12 +1,5 @@
 @font-face {
   font-family: 'Roboto';
-  font-weight: bold;
-  font-style: normal;
-  src: url(../font/Roboto-Bold.ttf);
-}
-
-@font-face {
-  font-family: 'Roboto';
   font-weight: 900;
   font-style: normal;
   src: url(../font/Roboto-Bold.ttf);
@@ -33,6 +26,13 @@
   src: url(../font/Roboto-Thin.ttf);
 }
 
+@font-face {
+  font-family: 'fontello';
+  src: url('../font/fontello.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
 html, body, #stage {
   height: 100%;
   margin: 0;
@@ -42,6 +42,7 @@ html, body, #stage {
 p {
   margin: 0;
 }
+
 body {
   background: #08D8D6;
   font-family: "Roboto";
@@ -50,6 +51,11 @@ body {
 .typeahead-wrapper {
   display: block;
   margin: 50px 0;
+}
+
+.twitter-typeahead {
+  position: absolute!important;
+  left: 241px;
 }
 
 .tt-dropdown-menu {
@@ -86,8 +92,9 @@ body {
 input {
   border: solid 1px white;
   outline: none;
-  font-size: 30px;
+  font-size: 24px;
   color: #0A807E;
+  font-family: Roboto
 }
 
 #stage {
@@ -97,7 +104,7 @@ input {
 
 #dropzone {
   border: 10px dashed #fff;
-  width: 300px;
+  width: 311px;
   height: 300px;
   margin: 10px auto;
   color: #fff;
@@ -139,11 +146,11 @@ input {
   font-weight: lighter;
 }
 
-#stage.video #video{
+#stage.video #video {
   height: 80%;
 }
 
-#stage.video #subtitles{
+#stage.video #subtitles {
   height: 10%;
 }
 
@@ -155,7 +162,7 @@ input {
   background: #fff;
 }
 
-.tick{
+.tick {
   position: absolute;
   top: 0;
   background: #0A807E;
@@ -164,6 +171,25 @@ input {
   margin-left: -2px;
 }
 
+.save, .upload{
+  color: #0A807E;
+  display: block;
+  opacity: .8;
+  cursor: pointer;
+}
+
+.save:hover, .upload:hover{
+  opacity: 1;
+}
+
+.box {
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+}
+
+.box span {
+  -webkit-box-flex: 1;
+}
 .noUi-handle {
   cursor: col-resize !important;
 }
