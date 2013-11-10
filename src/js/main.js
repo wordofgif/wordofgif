@@ -13,8 +13,7 @@ $(function() {
     console.log(quotes);
     $('.typeahead').on('typeahead:selected', function(ev, context) {
       console.log(context);
-      preview(file_name.replace("srt", "avi"), file_name.replace("avi", "srt"), context.startTimeParsed, context.duration, function() {
-      });
+      preview(file_name.replace("srt", "avi"), file_name.replace("avi", "srt"), context.startTimeParsed, context.duration, addVideo);
     });
 
     $('.typeahead').typeahead({
@@ -89,7 +88,7 @@ $(function() {
 
   function addVideo(src) {
     stage.removeClass('subtitles').addClass('video');
-    $('video').attr('src', src);
+    $('video').attr('src', 'out.webm');
     var video = $('video')[0];
 
     video.play();
