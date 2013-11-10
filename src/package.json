@@ -15,6 +15,7 @@
     "moment": "~2.4.0",
     "hogan.js": "~2.0.0",
     "subtitles-parser": "0.0.2",
+    "request": "2.27.0",
     "temporary": "0.0.7",
     "shelljs": "~0.2.6",
     "rimraf": "~2.2.2",
