@@ -96,7 +96,7 @@ $(function() {
       local: _.shuffle(_.map(quotes, function(srt_entry) {
         var secondsBefore = 2;
         var secondsAfter = 2;
-        var start = math.min(0, parseSrtTime(srt_entry.startTime) - secondsBefore * 1000);
+        var start = Math.max(0, parseSrtTime(srt_entry.startTime) - secondsBefore * 1000);
         var end = parseSrtTime(srt_entry.endTime) + secondsAfter * 1000;
         var duration = (end - start);
         var context = {}

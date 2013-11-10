@@ -5,18 +5,18 @@ html, body {
 }
 
 p {
-  margin: 0;
+  margin: 20px 0;
 }
 
 body {
   color: #fff;
-  background: #08D8D6;
+  background: #64D3D3;
   font-family: "Roboto";
 }
 
 #stage {
   margin: 100px auto;
-  width: 300px;
+  width: 793px;
   text-align: center;
 }
 
