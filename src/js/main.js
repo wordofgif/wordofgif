@@ -151,7 +151,7 @@ $(function() {
 
   function addVideo(src) {
     stage.removeClass('subtitles').addClass('video');
-    $('video').attr('src', 'out.webm');
+    $('video').attr('src', src.path);
     var video = $('video')[0];
 
     video.play();
