@@ -3,6 +3,7 @@ var child_process = require('child_process');
 var fs = require('fs');
 var tmp = require('temporary');
 var sh = require('shelljs');
+var _ = require('lodash');
 
 
 function toTimestamp(milis) {
@@ -98,11 +99,17 @@ function render(videoFilename, subtitleFilename, startOffset, duration, cb) {
 
   runProcess('ffmpeg', argsFFmpeg, function() {
     console.log('ffmpeg process finished. files saved to:', dir);
-    var output = tmp.File();
+    var output = new tmp.File();
     output.path += ".gif";
 
+    var files = sh.ls(dir.path)
+
+    var longFiles = _.map(files, function(file){
+      return dir.path+"/"+file;
+    })
+
     argsConvert = ["+dither", "-fuzz", "3%", "-delay", "1x8"]
-    argsConvert = argsConvert.concat(sh.ls())
+    argsConvert = argsConvert.concat(longFiles)
     argsConvert = argsConvert.concat(["-coalesce", "-layers", "OptimizeTransparency", output.path])
 
     // spawn imagemagick convert process
