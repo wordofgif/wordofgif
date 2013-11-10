@@ -15,7 +15,7 @@ function findFile(path) {
     }
   } else if (extension.match(/srt/)) {
     subtitlePath = path;
-    _.each(['.avi', '.mpeg'], function(extension) {
+    _.each(['.avi', '.mpeg', 'mpg', 'mp4', 'mkv'], function(extension) {
       if (fs.existsSync(fileName + extension)) {
         videoPath = fileName + extension;
         return false;
