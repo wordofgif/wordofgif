@@ -11,15 +11,16 @@ function escapeFilename(filename) {
   return filename.replace(/\[/g, '\\[').replace(/\]/g, '\\]');
 }
 
-function preview(videoFilename, subtitleFilename, startOffset, duration, cb) {
+function removeFileSync(filename) {
+  if (fs.existsSync(filename)) {
+    fs.unlinkSync(filename);
+  }
+}
+
+function FFmpegArgs(videoFilename, subtitleFilename, startOffset, duration) {
   // constants
   var codec = "libvpx";
-  var output = "out.webm";
   var inaccuracyPeriod = 30 * 1000;
-
-  if (fs.existsSync(output)) {
-    fs.unlinkSync(output);
-  }
 
   // figure out fast vs. accurate seeking
   var accurateSeekingStart;
@@ -30,7 +31,6 @@ function preview(videoFilename, subtitleFilename, startOffset, duration, cb) {
      accurateSeekingStart = 0;
   }
 
-  // spawn ffmpeg process
   var args = [
     "-ss", toTimestamp(accurateSeekingStart),
     "-i", videoFilename,
@@ -38,8 +38,18 @@ function preview(videoFilename, subtitleFilename, startOffset, duration, cb) {
     "-ss", toTimestamp(startOffset),
     "-t", toTimestamp(duration),
     "-vf", "subtitles="+escapeFilename(subtitleFilename),
-    output ];
-  console.log(args);
+  ];
+  return args;
+}
+
+function preview(videoFilename, subtitleFilename, startOffset, duration, cb) {
+  var output = "out.webm";
+  removeFileSync(output);
+
+  // spawn ffmpeg process
+  var args = FFmpegArgs(videoFilename, subtitleFilename, startOffset, duration);
+  args.push(output);
+  console.log("invoking ffmpeg with:", args);
   var ffmpeg = process.execFile('ffmpeg', args);
 
   // call callback, when done
