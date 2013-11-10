@@ -339,6 +339,7 @@ video {
 .imgur-url {
   background: #fff;
   width: 150px;
+  overflow: hidden;
   left: 153px;
   position: relative;
   top: 8px;

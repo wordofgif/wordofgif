@@ -215,10 +215,11 @@ $(function() {
 
 				uploadToImgur(gif.path, subtitles, function(result){
 						if(result.success){
-							console.log("uploaded to "+result.url)
-							//showUrl(result.url)
+              console.log("uploaded to " + result.url);
+              showImgurUrl(result.url)
 						} else {
-							console.log("error: "+util.inspect(result.error))	
+							console.log("error: "+util.inspect(result.error))
+              showError(result.error);
 						}
 					})
 			}
