@@ -128,7 +128,9 @@ input {
 #stage.drop #dropzone {
   margin-top: 87px;
 }
-
+video {
+  max-height: 400px;
+}
 #stage.drop #subtitles,
 #stage.drop #video {
   height: 0;

@@ -33,16 +33,18 @@
     </div>
     <div class="box">
 
-    <span class="upload">
+    <span class="upload" id="uploadButton">
       <i class="icon-upload"></i> Upload to imgur
     </span>
 
-    <span class="save">
+    <span class="save" id="saveButton">
       <i class="icon-download"></i> Save
     </span>
     </div>
 
   </div>
+  <!-- hidden file dialog input used to create a file picker in node-webkit -->
+  <input style="display:none;" id="fileDialog" type="file" />
 </div>
 
 </body>

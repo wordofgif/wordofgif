@@ -104,6 +104,23 @@ $(function() {
       $('.tick').css('left', value + '%');
     });
   }
+
+  function download(){
+     var chooser = $("#fileDialog");
+     chooser.change(function(evt) {
+         console.log("file chosen: "+$(this).val());
+       });
+
+     chooser.trigger('click');  
+  }
+
+  function upload(){
+
+  }
+
+  
+  $("#downloadButton").click(download)
+  $("#uploadButton").click(upload)
 });
 
 
