@@ -29,23 +29,46 @@
  *		box-sizing, so it needs to applied manually.
  */
 .noUi-handle {
-  background: #5EB0B0;
   height: 15px;
-  width: 8px;
-  margin: 0 0 0 -4px;
+  border-left: solid 2px #0A807E;
+  width: 2px;
+  margin: 0;
+  padding-left: 5px;
   cursor: col-resize;
 }
 
-.noUi-active {
-  background: #0A807E;
+.noUi-handle-lower:after,
+.noUi-handle-upper:after {
+  content: '▶';
+  margin-right: 15px;
+  position: relative;
+  left: -8px;
+  font-size: 12px;
+  top: 7px;
+  color: #0A807E;
+
 }
 
-.noUi-active:after {
-  -webkit-box-sizing: border-box;
-  content: "";
-  display: block;
-  height: 100%;
+.noUi-handle-upper {
+  border-right: solid 2px #0A807E;
+  border-left: none;
+  margin-left: -7px;
 }
+
+.noUi-handle-upper:after {
+  content: '◀';
+}
+
+/*.noUi-active {*/
+/*background: #0A807E;*/
+/*}*/
+
+/*.noUi-active:after {*/
+/*-webkit-box-sizing: border-box;*/
+/*content: "";*/
+/*display: block;*/
+/*height: 100%;*/
+/*}*/
 
 /*	Styling-only classes;
  *		Structured to prevent double declarations
