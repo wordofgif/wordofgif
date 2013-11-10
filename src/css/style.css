@@ -188,6 +188,7 @@ video {
 .box {
   display: -webkit-box;
   -webkit-box-orient: horizontal;
+  margin-top: 20px;
 }
 
 .box span {

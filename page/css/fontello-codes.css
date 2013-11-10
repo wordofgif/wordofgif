@@ -1,0 +1,6 @@
+
+.icon-apple:before { content: '\e802'; } /* '' */
+.icon-linux:before { content: '\e804'; } /* '' */
+.icon-download:before { content: '\e801'; } /* '' */
+.icon-upload:before { content: '\e800'; } /* '' */
+.icon-windows:before { content: '\e803'; } /* '' */

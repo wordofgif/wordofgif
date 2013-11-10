@@ -86,7 +86,7 @@ $(function() {
 
     $('.typeahead').typeahead({
       name: 'quotes',
-      limit: 5,
+      limit: 7,
       template: [
         '<p class="text">{{text}}</p>',
         '<span class="time">{{startTimeStripped}} - {{endTimeStripped}} ({{durationInSeconds}}s)</span>'
