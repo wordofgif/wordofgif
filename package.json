@@ -12,8 +12,7 @@
   },
   "dependencies": {
     "nko": "*",
-    "express": "3.4.4",
-    "request": "2.27.0"
+    "express": "3.4.4"
   },
   "engines": {
     "node": "0.10.x"
