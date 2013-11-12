@@ -18,14 +18,14 @@
     "request": "2.27.0",
     "temporary": "0.0.7",
     "shelljs": "~0.2.6",
-    "rimraf": "~2.2.2",
-    "request": "2.27.0"
+    "rimraf": "~2.2.2"
   },
   "engines": {
     "node": "0.10.x"
   },
   "devDependencies": {
-    "grunt": "~0.4.1"
+    "grunt": "~0.4.1",
+    "when": "~2.6.0"
   },
   "window": {
     "resizable": false,

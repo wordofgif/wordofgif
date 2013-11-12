@@ -1,27 +1,44 @@
 var fs = require('fs');
 var _ = require('lodash');
 
-function findFile(path) {
+var videoFileExtensions = ['avi', 'mpeg', 'mpg', 'mp4', 'mkv'];
+var videoFileExtensionsRegEx = createRegEx(videoFileExtensions);
+
+var subTitleFileExtensions = ['srt'];
+var subTitleFileExtensionsRegExp = createRegEx(subTitleFileExtensions);
+
+
+function findPathToFile(pathWithoutExtension, extensions) {
+  var path;
+  _.each(extensions, function(extension) {
+    var pathToCheck = pathWithoutExtension + '.' + extension
+    if (fs.existsSync(pathToCheck)) {
+      path = pathToCheck;
+      return false;
+    }
+  });
+  return path;
+}
+
+function createRegEx (fileExtensions) {
+  return new RegExp(fileExtensions.join('|'));
+}
+
+function findFiles(path) {
   var match = path.match(/([^]*)\.([^.]*)$/);
-  var fileName = match[1];
+  var pathWithoutExtension = match[1];
   var extension = match[2];
   var videoPath;
   var subtitlePath;
-  console.log(fileName);
-  if (extension.match(/avi|mpeg|mpg|mp4|mkv/)) {
+
+  if (extension.match(videoFileExtensionsRegEx)) {
     videoPath = path;
-    if (fs.existsSync(fileName) + '.srt') {
-      subtitlePath = fileName + '.srt';
-    }
-  } else if (extension.match(/srt/)) {
+    subtitlePath = findPathToFile(pathWithoutExtension, subTitleFileExtensions);
+  } else if (extension.match(subTitleFileExtensionsRegExp)) {
+    videoPath = findPathToFile(pathWithoutExtension, videoFileExtensions);
     subtitlePath = path;
-    _.each(['.avi', '.mpeg', 'mpg', 'mp4', 'mkv'], function(extension) {
-      if (fs.existsSync(fileName + extension)) {
-        videoPath = fileName + extension;
-        return false;
-      }
-    });
   }
+
   if (videoPath && subtitlePath) {
     return {
       videoPath: videoPath,
@@ -34,4 +51,4 @@ function findFile(path) {
   }
 }
 
-module.exports = findFile;
+module.exports = findFiles;

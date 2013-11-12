@@ -3,8 +3,7 @@ $(function() {
   var moment = require('moment');
   var subtitles_parser = require('subtitles-parser');
   var tmp = require('temporary');
-	var preview = require('./js/snippet').preview;
-	var snippet = require('./js/snippet');
+	var video = require('./js/video');
 	var fs = require('fs')
 	var uploadToImgur = require('./js/upload').upload
 	var util = require('util');
@@ -21,7 +20,7 @@ $(function() {
     var fs = require('fs');
     var _ = require('lodash');
 
-    var getSeekingStart = require('./js/snippet').getSeekingStart;
+    var getSeekingStart = require('./js/video').getSeekingStart;
 
     var findFile = require('./js/findFiles');
     var files = findFile(file_name);
@@ -72,17 +71,19 @@ $(function() {
       shifted_subtitles_file.writeFileSync(
         subtitles_parser.toSrt(get_quotes_with_offset(getSeekingStart(context.startTimeParsed).accurateSeekingStart))
       )
-      preview(
-        files.videoPath,
-        shifted_subtitles_file.path,
-        context.startTimeParsed,
-        context.duration,
-        addVideo
-      );
+      var settings = {
+        pathToVideo: files.videoPath,
+        pathToSubTitle: shifted_subtitles_file.path,
+        startTime: context.startTimeParsed,
+        duration: context.duration
+      }
+
+      video.preview(settings)
+        .done(addVideo);
 
 			//TODO avoid rendering anew for each call to upload or download
-			$("#saveButton").off('click').click(function(){download(file_name, shifted_subtitles_file.path, context.startTimeParsed, context.duration)})
-			$("#uploadButton").off('click').click(function(){upload(file_name, shifted_subtitles_file.path, context.startTimeParsed, context.duration, "words of GIF")})
+			$("#saveButton").off('click').click(function(){download(settings)})
+			$("#uploadButton").off('click').click(function(){upload(settings)})
     });
 
     $('.typeahead').typeahead({
@@ -122,7 +123,6 @@ $(function() {
 
   var dropzone = $('#dropzone');
   var stage = $('#stage');
-  var video = $('#video');
   var slider = $('.bar').noUiSlider({
     range: [0, 100],
     start: [0, 100]
@@ -138,7 +138,6 @@ $(function() {
   function ondrop(e) {
     e.preventDefault();
     var path = e.originalEvent.dataTransfer.files[0].path;
-    var video = document.getElementById('video');
     stage.removeClass('drop').addClass('subtitles');
     dropzone.removeClass('hover');
     prepareTypeahead(path);
@@ -163,67 +162,54 @@ $(function() {
   function addVideo(src) {
     $('video').attr('src', src.path);
     stage.removeClass('loading').addClass('video');
-    var video = $('video')[0];
+    var videoEl = $('video')[0];
 
-    video.play();
+    videoEl.play();
     slider.val([0, 100]);
-    video.removeEventListener('timeupdate');
-    video.addEventListener('timeupdate', function() {
-      var value = 100 / video.duration * video.currentTime;
+    videoEl.removeEventListener('timeupdate');
+    videoEl.addEventListener('timeupdate', function() {
+      var value = 100 / videoEl.duration * videoEl.currentTime;
       var sliderValues = slider.val();
       if (value > sliderValues[1]) {
         value = sliderValues[0];
-        video.currentTime = video.duration / 100 * value;
+        videoEl.currentTime = videoEl.duration / 100 * value;
       }
       $('.tick').css('left', value + '%');
     });
   }
 
-  function download(videoPath, shifted_subtitles_file_path, startTimeParsed, duration){
+  function download(settings){
 
-		console.log("download video: "+videoPath+", subfile: "+shifted_subtitles_file_path+", startTime: "+startTimeParsed+", duration: "+duration)
+    video.render(settings)
+      .done(function(gif) {
+        console.log("gif rendered to " + gif.path)
+        var chooser = $("#fileDialog");
+        chooser.change(function() {
+          var path = $(this).val()
+          console.log("move " + gif.path + "to " + path);
+          fs.renameSync(gif.path, path)
+        });
 
-		snippet.render(
-			videoPath.replace("srt", "avi"),
-			shifted_subtitles_file_path,
-			startTimeParsed,
-			duration,
-			function(gif){
-				console.log("gif rendered to "+gif.path)
-				var chooser = $("#fileDialog");
-				chooser.change(function(evt) {
-						path = $(this).val()
-						console.log("move "+gif.path+"to "+path);
-						fs.renameSync(gif.path, path)
-					});
+        chooser.trigger('click');
 
-				chooser.trigger('click');
-
-			}
-		);
+      });
 	}
 
-  function upload(videoPath, shifted_subtitles_file_path, startTimeParsed, duration, subtitles){
-		console.log("upload video: "+videoPath+", subfile: "+shifted_subtitles_file_path+", startTime: "+startTimeParsed+", duration: "+duration+", subs: "+subtitles)
-		snippet.render(
-			videoPath.replace("srt", "avi"),
-			shifted_subtitles_file_path,
-			startTimeParsed,
-			duration,
-			function(gif){
-				console.log("gif rendered to "+gif.path)
+  function upload(settings){
+		video.render(settings)
+      .done(function(gif) {
+        console.log("gif rendered to " + gif.path)
 
-				uploadToImgur(gif.path, subtitles, function(result){
-						if(result.success){
-              console.log("uploaded to " + result.url);
-              showImgurUrl(result.url)
-						} else {
-							console.log("error: "+util.inspect(result.error))
-              showError(result.error);
-						}
-					})
-			}
-		)
+        uploadToImgur(gif.path, "TODO add subtitles", function(result) {
+          if (result.success) {
+            console.log("uploaded to " + result.url);
+            showImgurUrl(result.url)
+          } else {
+            console.log("error: " + util.inspect(result.error))
+            showError(result.error);
+          }
+        })
+      })
   }
 
   function showImgurUrl(url) {
@@ -234,7 +220,4 @@ $(function() {
     $('.imgur-url').addClass('error').show().text(url);
   }
 
-
 });
-
-
