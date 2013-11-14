@@ -26,7 +26,6 @@ function run(executable, args) {
     }
   });
 
-  // debug prints
   process.stdout.on('data', function(data) {
     console.log('stdout: ' + data);
   });

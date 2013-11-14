@@ -60,32 +60,25 @@ function createTmpFile(extension) {
 
 function preview(settings) {
   var output = createTmpFile('webm');
-  var deferred = when.defer();
 
   // spawn ffmpeg process
   var args = ffmpegArgs(settings, "libvpx");
   args.push(output.path);
 
-  var d = process.run('ffmpeg', args)
-    .done(
-      deferred.resolve.bind(deferred, output),
-      deferred.reject.bind(deferred)
-    )
-
-  return deferred.promise;
+  return  process.run('ffmpeg', args)
+    .then(function() {
+      return output;
+    });
 }
 
 function render(settings) {
-  var deferred = when.defer();
   var output;
-
   var dir = new tmp.Dir();
-
-  // spawn ffmpeg process
   var argsFFmpeg = ffmpegArgs(settings, "png")
     .concat(["-s", "480x270", "-f", "image2", "-r", 8, dir.path + "/%03d.png"]);
 
-  process.run('ffmpeg', argsFFmpeg)
+  // spawn ffmpeg process
+  return  process.run('ffmpeg', argsFFmpeg)
     .then(function() {
       console.log('ffmpeg process finished. files saved to:', dir);
       output = createTmpFile('gif');
@@ -102,14 +95,10 @@ function render(settings) {
 
     })
     .then(_.partial(process.run, 'convert'))
-    .done(function() {
+    .then(function() {
       rimraf.sync(dir.path);
-      deferred.resolve(output);
-    }, deferred.reject.bind(deferred)
-  )
-
-  return deferred.promise;
+      return output
+    });
 }
 
 module.exports = { "preview": preview, "render": render, "getSeekingStart": getSeekingStart };
-

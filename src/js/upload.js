@@ -1,6 +1,6 @@
 var request = require('request');
 var fs = require('fs');
-//var util = require('util');
+var when = require('when');
 
 var imgurUploadPath = 'https://api.imgur.com/3/image';
 
@@ -11,37 +11,31 @@ var imgurUploadOptions = {
   }
 }
 
+function toImgur(gif, text) {
+  console.log('start upload');
 
-function upload(path, text, urlCallback){
-  console.log("upload")
-  var r = request.post(imgurUploadOptions, function(e, r, rbody){
-      //console.log("e: "+e);
-      //console.log("r: "+r);
-      //console.log("rbody: "+rbody);
-
-      if(rbody){
-        var body = JSON.parse(rbody)
-        //console.log("body: "+util.inspect(body))
-        if(body.success){
-          //console.log("success")
-          var url = body.data.link
-          urlCallback({url: url, success: true})
-        } else {
-          //console.log("error: "+body.data.error)
-          urlCallback({success: false, error: "upload failed, imgur returned "+body.status+", error: "+body.data.error})
-        }
+  var deferred = when.defer();
+  var r = request.post(imgurUploadOptions, function(error, response, body) {
+    if (body) {
+      var body = JSON.parse(body);
+      if (body.success) {
+        var url = body.data.link;
+        deferred.resolve(url);
       } else {
-        //console.log("unknown error")
-        urlCallback({success: false, error: "unknown error: "+e})
-      } 
-    });
+        deferred.reject({status: body.status, error: body.data.error});
+      }
+    } else {
+      deferred.reject({error: error});
+    }
+  });
 
   var form = r.form();
 
-  form.append('image', fs.createReadStream(path))
-  //form.append('title', 'TODO: titles')
-  form.append('description', text)
-  form.append('type', 'file')
+  form.append('image', fs.createReadStream(gif.path));
+//  form.append('description', text);
+  form.append('type', 'file');
+
+  return deferred.promise;
 }
 
-module.exports = {"upload": upload};
+module.exports = {'toImgur': toImgur};

@@ -1,119 +1,55 @@
 $(function() {
 
-  var moment = require('moment');
-  var subtitles_parser = require('subtitles-parser');
-  var tmp = require('temporary');
-	var video = require('./js/video');
-	var fs = require('fs')
-	var uploadToImgur = require('./js/upload').upload
-	var util = require('util');
-
-  function parseSrtTime(string) {
-    return moment.duration(string.replace(",", ".")).asMilliseconds()
-  }
-
-  function formatSrtTime(millis) {
-    return moment(millis).utc().format("HH:mm:ss,SSS")
-  }
+  var video = require('./js/video');
+  var fs = require('fs');
+  var upload = require('./js/upload');
+  var util = require('util');
+  var findFile = require('./js/findFiles');
+  var SubTitles = require('./js/subTitles');
 
   function prepareTypeahead(file_name) {
-    var fs = require('fs');
-    var _ = require('lodash');
 
-    var getSeekingStart = require('./js/video').getSeekingStart;
-
-    var findFile = require('./js/findFiles');
     var files = findFile(file_name);
+
     if (files.error) {
       alert(files.error);
       return;
     }
-    var file_content = fs.readFileSync(files.subTitlePath);
-    var quotes = subtitles_parser.fromSrt(file_content.toString());
 
-    var get_quotes_with_offset = function(offset) {
-
-      console.log('shifting by', offset, 'milliseconds (', formatSrtTime(offset), ')');
-
-      return _.map(quotes, function(srt_entry) {
-
-        var shifted_start = parseSrtTime(srt_entry.startTime) - offset;
-        var shifted_end = parseSrtTime(srt_entry.endTime) - offset;
-
-        if (shifted_start < 0 || shifted_end < 0) {
-          return -1;
-        }
-
-        _.extend(srt_entry, {
-          startTime: formatSrtTime(shifted_start),
-          endTime: formatSrtTime(shifted_end)
-        })
-
-        return srt_entry;
-      }).filter(function(entry) {
-        return entry != -1;
-      }).map(function(srt_entry, index) {
-        _.extend(srt_entry, {
-          id: ""+ (index + 1)
-        });
-        return srt_entry;
-      })
-
-    }
-
-    console.log(files);
-    console.log(quotes);
+    var subTitles = new SubTitles(files.subTitlePath);
 
     $('.typeahead').on('typeahead:selected', function(ev, context) {
-      console.log(context);
       startVideoProcessing();
-      var shifted_subtitles_file = new tmp.File('srt');
-      shifted_subtitles_file.writeFileSync(
-        subtitles_parser.toSrt(get_quotes_with_offset(getSeekingStart(context.startTimeParsed).accurateSeekingStart))
-      )
+      var offset = video.getSeekingStart(context.startTimeParsed).accurateSeekingStart;
+      var pathToShiftedSubTitle = subTitles.createShiftedSubTitlesFile(offset);
       var settings = {
         pathToVideo: files.videoPath,
-        pathToSubTitle: shifted_subtitles_file.path,
+        pathToSubTitle: pathToShiftedSubTitle,
         startTime: context.startTimeParsed,
         duration: context.duration
-      }
+      };
 
       video.preview(settings)
         .done(addVideo);
 
-			//TODO avoid rendering anew for each call to upload or download
-			$("#saveButton").off('click').click(function(){download(settings)})
-			$("#uploadButton").off('click').click(function(){upload(settings)})
+      //TODO avoid rendering anew for each call to upload or download
+      $("#saveButton").off('click').click(function() {
+        download(settings)
+      });
+      $("#uploadButton").off('click').click(function() {
+        uploadToImgur(settings)
+      });
     });
 
     $('.typeahead').typeahead({
       name: 'quotes',
       limit: 7,
       template: [
-        '<p class="text">{{text}}</p>',
-        '<span class="time">{{startTimeStripped}} - {{endTimeStripped}} ({{durationInSeconds}}s)</span>'
+        '<p class="text">{{templateText}}</p>',
+        '<span class="time">{{templateStartTime}} - {{templateEndTime}} ({{templateDuration}}s)</span>'
       ].join(''),
       engine: require('hogan.js'),
-      local: _.shuffle(_.map(quotes, function(srt_entry) {
-        var secondsBefore = 2;
-        var secondsAfter = 2;
-        var start = Math.max(0, parseSrtTime(srt_entry.startTime) - secondsBefore * 1000);
-        var end = parseSrtTime(srt_entry.endTime) + secondsAfter * 1000;
-        var duration = (end - start);
-        var context = {}
-
-        _.extend(context, srt_entry, {
-          value: srt_entry.text,
-          text: srt_entry.text.replace(/<[^>]*>/g, ''),
-          startTimeStripped: moment(start).utc().format('HH:mm:ss'),
-          endTimeStripped: moment(end).utc().format('HH:mm:ss'),
-          duration: duration,
-          durationInSeconds: Math.floor(duration / 1000),
-          startTimeParsed: start,
-          endTimeParsed: end
-        });
-        return context;
-      }))
+      local: subTitles.quotesForTypeAHead()
     });
   }
 
@@ -156,8 +92,10 @@ $(function() {
   function stop(e) {
     e.preventDefault();
   }
-  function startVideoProcessing () {
-    stage.removeClass('subtitles').addClass('loading');  }
+
+  function startVideoProcessing() {
+    stage.removeClass('subtitles').addClass('loading');
+  }
 
   function addVideo(src) {
     $('video').attr('src', src.path);
@@ -178,38 +116,22 @@ $(function() {
     });
   }
 
-  function download(settings){
-
+  function download(settings) {
     video.render(settings)
-      .done(function(gif) {
-        console.log("gif rendered to " + gif.path)
+      .then(function(gif) {
         var chooser = $("#fileDialog");
         chooser.change(function() {
-          var path = $(this).val()
-          console.log("move " + gif.path + "to " + path);
+          var path = $(this).val();
           fs.renameSync(gif.path, path)
         });
-
         chooser.trigger('click');
-
       });
-	}
+  }
 
-  function upload(settings){
-		video.render(settings)
-      .done(function(gif) {
-        console.log("gif rendered to " + gif.path)
-
-        uploadToImgur(gif.path, "TODO add subtitles", function(result) {
-          if (result.success) {
-            console.log("uploaded to " + result.url);
-            showImgurUrl(result.url)
-          } else {
-            console.log("error: " + util.inspect(result.error))
-            showError(result.error);
-          }
-        })
-      })
+  function uploadToImgur(settings) {
+    video.render(settings)
+      .then(upload.toImgur)
+      .then(showImgurUrl, showError);
   }
 
   function showImgurUrl(url) {
@@ -217,7 +139,7 @@ $(function() {
   }
 
   function showError(error) {
-    $('.imgur-url').addClass('error').show().text(url);
+    $('.imgur-url').addClass('error').show().text(error.error);
   }
 
 });
