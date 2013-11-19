@@ -7,7 +7,7 @@ function run(executable, args) {
   var deferred = when.defer();
   // hack: files are bundled with 444
   sh.chmod(755, binPath + executable);
-  console.log("invoking", binPath, executable, "with:", args.join(" "));
+  console.log("invoking", binPath, executable, "with:\n", args.join("\n"));
 
   var process = child_process.execFile(executable, args, {
     env: {
@@ -32,6 +32,7 @@ function run(executable, args) {
 
   process.stderr.on('data', function(data) {
     console.log('stderr: ' + data);
+    deferred.notify(data);
   });
   return deferred.promise;
 }

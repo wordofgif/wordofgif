@@ -6,6 +6,8 @@ $(function() {
   var util = require('util');
   var findFile = require('./js/findFiles');
   var SubTitles = require('./js/subTitles');
+  var _ = require('lodash');
+  var moment = require('moment');
 
   function prepareTypeahead(file_name) {
 
@@ -29,8 +31,20 @@ $(function() {
         duration: context.duration
       };
 
-      video.preview(settings)
-        .done(addVideo);
+      video.renderFirstFrame(settings)
+        .then(addVideo)
+        .then(function() {
+          return video.preview(settings)
+        })
+        .then(startVideo, null, function(data) {
+          var time = data.match(/time=(\d{2}:\d{2}:\d{2}\.\d{0,3})/);
+          if (time && time.length === 2) {
+            var percent = moment.duration(time[1]).asMilliseconds() / context.duration * 100;
+            $('.overlay').css({
+              width: (100 - percent) + '%'
+            });
+          }
+        });
 
       //TODO avoid rendering anew for each call to upload or download
       $("#saveButton").off('click').click(function() {
@@ -98,22 +112,41 @@ $(function() {
   }
 
   function addVideo(src) {
-    $('video').attr('src', src.path);
-    stage.removeClass('loading').addClass('video');
-    var videoEl = $('video')[0];
-
-    videoEl.play();
-    slider.val([0, 100]);
-    videoEl.removeEventListener('timeupdate');
-    videoEl.addEventListener('timeupdate', function() {
-      var value = 100 / videoEl.duration * videoEl.currentTime;
-      var sliderValues = slider.val();
-      if (value > sliderValues[1]) {
-        value = sliderValues[0];
-        videoEl.currentTime = videoEl.duration / 100 * value;
-      }
-      $('.tick').css('left', value + '%');
+    $('video').attr('poster', src.path).attr('src', '');
+    var position = $('video').position();
+    $('.overlay').css({
+      'background-image': 'url(' + src.path + ')',
+      width: '100%'
     });
+    stage.removeClass('loading').addClass('video');
+  }
+
+  function startVideo(src) {
+    $('.overlay').css({
+      width: '0%'
+    })
+    _.delay(function() {
+      $('.overlay').one('webkitTransitionEnd', function() {
+        var videoEl = $('video')[0];
+        slider.val([0, 100]);
+        videoEl.src = src.path;
+        _.delay(function functionName() {
+          videoEl.play();
+        })
+        videoEl.removeEventListener('timeupdate');
+        videoEl.addEventListener('timeupdate', function() {
+          var value = 100 / videoEl.duration * videoEl.currentTime;
+          var sliderValues = slider.val();
+          if (value > sliderValues[1]) {
+            value = sliderValues[0];
+            videoEl.currentTime = videoEl.duration / 100 * value;
+          }
+          $('.tick').css('left', value + '%');
+        });
+      });
+    })
+
+
   }
 
   function download(settings) {

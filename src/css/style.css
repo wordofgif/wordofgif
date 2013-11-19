@@ -201,140 +201,10 @@ video {
   cursor: col-resize !important;
 }
 
-#spinner {
-  display: none;
-}
-
-#stage.loading #spinner {
-  display: block;
-}
-
 #stage.loading #video {
   display: none;
 }
 
-.spinner16 {
-  width: 80px;
-  height: 80px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-top: -40px;
-  margin-left: -40px;
-}
-
-.spinner16 ul {
-  position: relative;
-  margin: 0;
-  padding: 0;
-}
-
-.spinner16 ul:after {
-  content: "";
-  clear: both;
-  display: table;
-}
-
-.spinner16 li {
-  margin: 0;
-  padding: 0;
-  height: 20px;
-  width: 20px;
-  list-style: none;
-  float: left;
-  -webkit-animation-name: spinner2;
-  -webkit-animation-duration: 1.6s;
-  -webkit-animation-timing-function: cubic-bezier(0.075, 0.820, 0.165, 1.000);
-  -webkit-animation-iteration-count: infinite;
-  -webkit-animation-direction: normal;
-}
-
-@-webkit-keyframes spinner2 {
-  0% {
-    box-shadow: inset 0 0 0 7px #08D8D6;
-    opacity: 1;
-    border-radius: 50%;
-  }
-  25% {
-    box-shadow: inset 0 0 0 13px #0A807E;
-    opacity: 0.7;
-    border-radius: 20%;
-  }
-  75% {
-    box-shadow: inset 0 0 0 15px #0A807E;
-    opacity: 1;
-    border-radius: 0;
-  }
-  100% {
-    box-shadow: inset 0 0 0 0px #0A807E;
-    opacity: 0.3;
-    border-radius: 50%;
-  }
-}
-
-.spinner16 li:first-child {
-  -webkit-animation-delay: 0.1s;
-}
-
-.spinner16 li:nth-child(2) {
-  -webkit-animation-delay: 0.2s;
-}
-
-.spinner16 li:nth-child(3) {
-  -webkit-animation-delay: 0.3s;
-}
-
-.spinner16 li:nth-child(4) {
-  -webkit-animation-delay: 0.4s;
-}
-
-.spinner16 li:nth-child(5) {
-  -webkit-animation-delay: 0.5s;
-}
-
-.spinner16 li:nth-child(6) {
-  -webkit-animation-delay: 0.6s;
-}
-
-.spinner16 li:nth-child(7) {
-  -webkit-animation-delay: 0.7s;
-}
-
-.spinner16 li:nth-child(8) {
-  -webkit-animation-delay: 0.8s;
-}
-
-.spinner16 li:nth-child(9) {
-  -webkit-animation-delay: 0.9s;
-}
-
-.spinner16 li:nth-child(10) {
-  -webkit-animation-delay: 1s;
-}
-
-.spinner16 li:nth-child(11) {
-  -webkit-animation-delay: 1.1s;
-}
-
-.spinner16 li:nth-child(12) {
-  -webkit-animation-delay: 1.2s;
-}
-
-.spinner16 li:nth-child(13) {
-  -webkit-animation-delay: 1.3s;
-}
-
-.spinner16 li:nth-child(14) {
-  -webkit-animation-delay: 1.4s;
-}
-
-.spinner16 li:nth-child(15) {
-  -webkit-animation-delay: 1.5s;
-}
-
-.spinner16 li:last-child {
-  -webkit-animation-delay: 1.6s;
-}
 
 .imgur-url {
   background: #fff;
@@ -350,4 +220,28 @@ video {
 
 .errror{
   color: #FF658C;
+}
+
+.overlay{
+  display: none;
+  position: absolute;
+  background: black top right;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  right: 0;
+  -webkit-filter: blur(5px);
+  margin: -5px -10px -10px -5px;
+  -webkit-transition: 1s;
+}
+
+.loading .overlay,
+.video .overlay{
+  display: block;
+}
+
+.videoImage{
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
 }

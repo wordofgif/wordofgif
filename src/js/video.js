@@ -43,18 +43,18 @@ function getSeekingStart(startOffset) {
 function ffmpegArgs(settings, codec) {
   var seekingStart = getSeekingStart(settings.startTime);
   return [
-    "-ss", toTimestamp(seekingStart.accurateSeekingStart),
-    "-i", settings.pathToVideo,
-    "-c:v", codec,
-    "-ss", toTimestamp(seekingStart.startOffset),
-    "-t", toTimestamp(settings.duration),
-    "-vf", "subtitles=" + escapeFilename(settings.pathToSubTitle)
+    '-ss', toTimestamp(seekingStart.accurateSeekingStart),
+    '-i', settings.pathToVideo,
+    '-c:v', codec,
+    '-ss', toTimestamp(seekingStart.startOffset),
+    '-t', toTimestamp(settings.duration),
+    '-vf', 'subtitles=' + escapeFilename(settings.pathToSubTitle)
   ];
 }
 
 function createTmpFile(extension) {
   var output = new tmp.File();
-  output.path += "." + extension;
+  output.path += '.' + extension;
   return output;
 }
 
@@ -62,10 +62,22 @@ function preview(settings) {
   var output = createTmpFile('webm');
 
   // spawn ffmpeg process
-  var args = ffmpegArgs(settings, "libvpx");
+  var args = ffmpegArgs(settings, 'libvpx');
   args.push(output.path);
 
   return  process.run('ffmpeg', args)
+    .then(function() {
+      console.log(output);
+      return output;
+    });
+}
+
+function renderFirstFrame(settings) {
+  var output = createTmpFile('png');
+  var args = ffmpegArgs(settings, 'png')
+    .concat(['-f', 'image2',  '-f' , 'image2', '-vframes', 1, output.path]);
+
+  return process.run('ffmpeg', args)
     .then(function() {
       return output;
     });
@@ -74,8 +86,8 @@ function preview(settings) {
 function render(settings) {
   var output;
   var dir = new tmp.Dir();
-  var argsFFmpeg = ffmpegArgs(settings, "png")
-    .concat(["-s", "480x270", "-f", "image2", "-r", 8, dir.path + "/%03d.png"]);
+  var argsFFmpeg = ffmpegArgs(settings, 'png')
+    .concat(['-s', '480x270', '-f', 'image2', '-r', 8, dir.path + '/%03d.png']);
 
   // spawn ffmpeg process
   return  process.run('ffmpeg', argsFFmpeg)
@@ -86,12 +98,12 @@ function render(settings) {
       var files = sh.ls(dir.path);
 
       var longFiles = _.map(files, function(file) {
-        return dir.path + "/" + file;
+        return dir.path + '/' + file;
       });
 
-      return  argsConvert = ["+dither", "-fuzz", "3%", "-delay", "1x8"]
+      return  argsConvert = ['+dither', '-fuzz', '3%', '-delay', '1x8']
         .concat(longFiles)
-        .concat(["-coalesce", "-layers", "OptimizeTransparency", output.path]);
+        .concat(['-coalesce', '-layers', 'OptimizeTransparency', output.path]);
 
     })
     .then(_.partial(process.run, 'convert'))
@@ -101,4 +113,9 @@ function render(settings) {
     });
 }
 
-module.exports = { "preview": preview, "render": render, "getSeekingStart": getSeekingStart };
+module.exports = {
+  'preview': preview,
+  'render': render,
+  'getSeekingStart': getSeekingStart,
+  'renderFirstFrame': renderFirstFrame
+};
