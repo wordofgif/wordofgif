@@ -1,0 +1,111 @@
+
+.switch input[type="time"] {
+  font-family: 'Roboto', sans-serif;
+  font-size: 20px;
+  font-weight: 200;
+  border: solid 1px #ddd;
+  padding: 10px 5px 5px;
+  width: 200px;
+}
+
+.time-input {
+  position: relative;
+}
+
+.time-input span {
+  position: absolute;
+  font-family: 'Roboto', sans-serif;
+  top: 4px;
+  left: 6px;
+  color: #aaa;
+  font-size: 10px
+}
+
+input::-webkit-datetime-edit-hour-field,
+input::-webkit-datetime-edit-minute-field,
+input::-webkit-datetime-edit-second-field {
+
+}
+
+input::-webkit-clear-button,
+input[type="time"]::-webkit-inner-spin-button {
+  display: none;
+}
+
+.switch input,
+.switch label {
+  margin: 0;
+  position: relative;
+  box-sizing: border-box;
+  height: 30px
+}
+
+.switch {
+  position: absolute;
+  left: 243px;
+}
+
+.switch > div {
+  overflow-x: hidden;
+  width: 314px;
+  position: absolute;
+  z-index: 222;
+}
+
+.switch .box {
+  transition: .3s;
+  display: -webkit-flex;
+  width: 564px;
+}
+
+.switch label {
+  width: 30px;
+  height: 30px;
+  background: rgb(219, 219, 219);
+  color: white;
+  font-weight: 100;
+  font-size: 17px;
+  text-align: center;
+  padding-top: 4px;
+}
+
+.switch label:nth-child(2),
+.set-time label:nth-child(3) {
+  background: rgb(33, 158, 182);
+}
+
+.set-time label:nth-child(2) {
+  background: rgb(219, 219, 219);
+}
+
+.time-input {
+  display: -webkit-flex;
+}
+
+.time-input div {
+  position: relative;
+}
+
+form {
+  position: relative;
+  overflow: hidden;
+  width: 230px
+}
+
+.time {
+  left: -170px
+}
+
+.tt-dropdown-menu {
+  position: relative !important;
+}
+
+.set-time {
+  margin-left: -254px;
+}
+
+.twitter-typeahead,
+.time-input,
+.typeahead {
+  flex: 1;
+}

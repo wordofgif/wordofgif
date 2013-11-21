@@ -9,6 +9,10 @@ $(function() {
   var _ = require('lodash');
   var moment = require('moment');
 
+  var box = $('.switch .box');
+  $('label[for="_quote"]').click(function(){box.removeClass('set-time')})
+  $('label[for="_start-time"]').click(function(){box.addClass('set-time')})
+
   function prepareTypeahead(file_name) {
 
     var files = findFile(file_name);

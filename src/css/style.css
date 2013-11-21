@@ -53,11 +53,6 @@ body {
   margin: 50px 0;
 }
 
-.twitter-typeahead {
-  position: absolute !important;
-  left: 241px;
-}
-
 .tt-dropdown-menu {
   background-color: #fff;
   width: 100%;

@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="css/style.css"/>
   <link rel="stylesheet" href="css/slider.css"/>
   <link rel="stylesheet" href="css/fontello.css"/>
+  <link rel="stylesheet" href="css/switch.css"/>
 
   <script type="text/javascript" src="js/jquery-2.0.3.js"></script>
   <script type="text/javascript" src="js/typeahead.js"></script>
@@ -23,9 +24,27 @@
   </div>
 
   <div class="container tab" id="subtitles">
-    <input class="typeahead" placeholder="Search Quote">
-  </div>
+    <div class="switch">
+      <div class="">
+        <div class="box">
+          <input class="typeahead" placeholder="Search Quote" id="quote">
+          <label for="_quote"><i class="icon-comment"></i></label>
+          <label for="_start-time"><i class="icon-clock"></i></label>
 
+          <div class="time-input">
+            <div>
+              <input type="time" step=1 value="00:00:00" id="start-time">
+              <span>start</span>
+            </div>
+            <div>
+              <input type="time" step=1 value="00:00:00" id="end-time">
+              <span>end</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="tab" id="video">
     <div class="videoImage">
       <video src="" loop muted>
