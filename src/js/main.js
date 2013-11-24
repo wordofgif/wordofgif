@@ -79,7 +79,8 @@ $(function() {
   var stage = $('#stage');
   var slider = $('.bar').noUiSlider({
     range: [0, 100],
-    start: [0, 100]
+    start: [0, 100],
+    connect:true
   });
 
   dropzone

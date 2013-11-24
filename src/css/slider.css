@@ -7,98 +7,73 @@
  */
 .noUi-target * {
   -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   -webkit-touch-callout: none;
+  -ms-touch-action: none;
   -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   cursor: default;
 }
 
 /*	Main slider bar;
- *		Standard styles no longer incorrectly force a
- *		width or height on the slider.
+ *		Use box-shadow instead of border to keep absolute
+ *		positioning unrelated to the styling.
  */
 .noUi-base {
   width: 100%;
+  margin: 1px;
+  height: 38px;
   position: relative;
-  max-width: 100%;
-  max-height: 100%;
-  z-index: 1;
+  box-shadow: 0 0 0 1px #BFBFBF;
 }
 
 /*	Handles + active state;
- *		The :after pseudo-element wont inherit
- *		box-sizing, so it needs to applied manually.
  */
 .noUi-handle {
-  height: 15px;
-  border-left: solid 2px #0A807E;
-  width: 2px;
-  margin: 0;
-  padding-left: 5px;
-  cursor: col-resize;
-}
-
-.noUi-handle-lower:after,
-.noUi-handle-upper:after {
-  content: '▶';
-  margin-right: 15px;
+  top: -3px;
+  left: -23px;
+  width: 44px;
+  height: 44px;
+  z-index: 1;
   position: relative;
-  left: -8px;
-  font-size: 12px;
-  top: 7px;
-  color: #0A807E;
-
+  background: #EEE;
+  border: 1px solid #BFBFBF;
 }
-
-.noUi-handle-upper {
-  border-right: solid 2px #0A807E;
-  border-left: none;
-  margin-left: -7px;
+.noUi-active {
+  background: #E9E9E9;
+  box-shadow: inset 0 0 5px #DDD;
 }
-
-.noUi-handle-upper:after {
-  content: '◀';
-}
-
-/*.noUi-active {*/
-/*background: #0A807E;*/
-/*}*/
-
-/*.noUi-active:after {*/
-/*-webkit-box-sizing: border-box;*/
-/*content: "";*/
-/*display: block;*/
-/*height: 100%;*/
-/*}*/
 
 /*	Styling-only classes;
  *		Structured to prevent double declarations
  *		for various states of the slider.
  */
 .noUi-connect {
-  background: #0A807E;
+  background: Teal;
+  -webkit-transition: background 0.6s;
+  transition: background 0.6s;
 }
-
 .noUi-background {
-  background: #0A807E;
+  background: #DDD;
 }
 
 /*	Functional styles for handle positioning;
- *		Note that the origins have z-index 0, the base has
- *		z-index 1; This fixes a bug where borders become invisible.
+ *		Note that the origins will inherit border radius
+ *		from the parent, even though the default theme
+ *		doesn't use curved borders.
  */
 .noUi-origin {
   position: absolute;
   right: 0;
   top: 0;
   bottom: 0;
-  z-index: 0;
   border-radius: inherit;
 }
-
-.noUi-origin-upper {
+.noUi-origin + .noUi-origin {
   background: inherit !important;
 }
-
 .noUi-z-index {
   z-index: 10;
 }
@@ -108,35 +83,65 @@
  *		exceptions for the vertical slider as minimal as possible.
  */
 .noUi-vertical {
-  width: 15px;
+  width: 38px;
   height: 100%;
 }
-
 .noUi-vertical .noUi-origin {
   bottom: 0;
   left: 0;
 }
-
-.noUi-vertical .noUi-handle {
-  margin: -23px 0 0 -3px;
+.noUi-vertical .noUi-handle  {
+  top: -23px;
+  left: -3px;
 }
 
-/*	Various alternate slider states;
+/*	Slider disabled state;
+ */
+[disabled] .noUi-base {
+  background: #DDD;
+}
+[disabled] .noUi-handle {
+  background: #F7F7F7;
+  cursor: not-allowed;
+}
+[disabled] .noUi-connect {
+  background: #EEE;
+}
+
+/*	Transition states;
  *		Support for transition is widely available,
  *		Only IE7, IE8 and IE9 will ignore these rules.
  *		Since this is merely a progressive enhancement,
  *		this is no problem at all.
  *		http://caniuse.com/#search=transition
  */
-.noUi-target[disabled] .noUi-base {
-  background: #999;
-}
-
-.noUi-target[disabled] .noUi-connect {
-  background: #BBB;
-}
-
 .noUi-state-tap .noUi-origin {
   -webkit-transition: left 0.3s, top 0.3s;
   transition: left 0.3s, top 0.3s;
+}
+.noUi-state-blocked .noUi-connect {
+  background: #7f8c8d;
+}
+
+.noUi-base{
+  height: 2px;
+  border-radius: 4px;
+  background: #fff;
+  border: none;
+  box-shadow: none;
+}
+
+.noUi-handle{
+  top: -7px;
+  left: -7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 8px;
+  border: solid 4px #fff;
+  background: #02C2D9;
+  -webkit-box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.20);
+}
+
+.noUi-connect{
+  background: #02C2D9;
 }

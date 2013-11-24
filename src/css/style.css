@@ -87,7 +87,7 @@ body {
 input {
   border: solid 1px white;
   outline: none;
-  font-size: 24px;
+  font-size: 20px;
   color: #0A807E;
   font-family: Roboto
 }
@@ -157,18 +157,21 @@ video {
 .bar {
   position: relative;
   width: 600px;
-  height: 15px;
+  height: 2px;
   display: inline-block;
-  background: #fff;
 }
 
 .tick {
   position: absolute;
-  top: 0;
-  background: #0A807E;
-  height: 15px;
-  width: 2px;
+  top: -1px;
+  background: #fff;
+  height: 6px;
+  width: 6px;
   margin-left: -2px;
+  z-index: 1;
+  border: solid 1px rgba(2, 194, 217, 1);
+  border-radius: 6px;
+  transition: .1s linear;
 }
 
 .save, .upload {
@@ -200,7 +203,6 @@ video {
   display: none;
 }
 
-
 .imgur-url {
   background: #fff;
   width: 150px;
@@ -213,11 +215,11 @@ video {
   text-align: left;
 }
 
-.errror{
+.errror {
   color: #FF658C;
 }
 
-.overlay{
+.overlay {
   display: none;
   position: absolute;
   background: black top right;
@@ -231,11 +233,11 @@ video {
 }
 
 .loading .overlay,
-.video .overlay{
+.video .overlay {
   display: block;
 }
 
-.videoImage{
+.videoImage {
   display: inline-block;
   position: relative;
   overflow: hidden;

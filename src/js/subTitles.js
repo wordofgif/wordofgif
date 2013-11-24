@@ -78,11 +78,31 @@ SubTitle.prototype.quotesForTypeAHead = function() {
     .value();
 }
 
-SubTitle.prototype.createShiftedSubTitlesFile = function(offset) {
+SubTitle.prototype.createShiftedSubTitlesFile = function(startTime) {
+  var offset = this.getSeekingStart(startTime).accurateSeekingStart;
 
   var shiftedSubtitlesFile = new tmp.File('srt');
   shiftedSubtitlesFile.writeFileSync(subtitlesParser.toSrt(this.getQuotesWithOffset(offset)));
   return shiftedSubtitlesFile.path;
+}
+
+SubTitle.prototype.getSeekingStart = function(startOffset) {
+  // constants
+  var inaccuracyPeriod = 30 * 1000;
+
+  // figure out fast vs. accurate seeking
+  var accurateSeekingStart;
+  if (startOffset > inaccuracyPeriod) {
+    accurateSeekingStart = startOffset - inaccuracyPeriod;
+    startOffset = inaccuracyPeriod;
+  } else {
+    accurateSeekingStart = 0;
+  }
+
+  return {
+    accurateSeekingStart: accurateSeekingStart,
+    startOffset: startOffset
+  }
 }
 
 module.exports = SubTitle
