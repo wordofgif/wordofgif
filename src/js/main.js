@@ -1,17 +1,22 @@
 $(function() {
 
-  var video = require('./js/video');
+  var Video = require('./js/video');
+  var SubTitles = require('./js/subTitles');
+
   var fs = require('fs');
   var upload = require('./js/upload');
   var util = require('util');
   var findFile = require('./js/findFiles');
-  var SubTitles = require('./js/subTitles');
   var _ = require('lodash');
   var moment = require('moment');
 
   var box = $('.switch .box');
-  $('label[for="_quote"]').click(function(){box.removeClass('set-time')})
-  $('label[for="_start-time"]').click(function(){box.addClass('set-time')})
+  $('label[for="_quote"]').click(function() {
+    box.removeClass('set-time')
+  })
+  $('label[for="_start-time"]').click(function() {
+    box.addClass('set-time')
+  })
 
   function prepareTypeahead(file_name) {
 
@@ -26,19 +31,18 @@ $(function() {
 
     $('.typeahead').on('typeahead:selected', function(ev, context) {
       startVideoProcessing();
-      var offset = video.getSeekingStart(context.startTimeParsed).accurateSeekingStart;
-      var pathToShiftedSubTitle = subTitles.createShiftedSubTitlesFile(offset);
+      var pathToShiftedSubTitle = subTitles.createShiftedSubTitlesFile(context.startTimeParsed);
       var settings = {
         pathToVideo: files.videoPath,
         pathToSubTitle: pathToShiftedSubTitle,
         startTime: context.startTimeParsed,
         duration: context.duration
       };
-
-      video.renderFirstFrame(settings)
+      var video = new Video(settings);
+      video.renderFirstFrame()
         .then(addVideo)
         .then(function() {
-          return video.preview(settings)
+          return video.preview()
         })
         .then(startVideo, null, function(data) {
           var time = data.match(/time=(\d{2}:\d{2}:\d{2}\.\d{0,3})/);
@@ -51,12 +55,8 @@ $(function() {
         });
 
       //TODO avoid rendering anew for each call to upload or download
-      $("#saveButton").off('click').click(function() {
-        download(settings)
-      });
-      $("#uploadButton").off('click').click(function() {
-        uploadToImgur(settings)
-      });
+      $("#saveButton").off('click').click(download.bind(video));
+      $("#uploadButton").off('click').click(uploadToImgur.bind(video));
     });
 
     $('.typeahead').typeahead({
@@ -135,9 +135,7 @@ $(function() {
         var videoEl = $('video')[0];
         slider.val([0, 100]);
         videoEl.src = src.path;
-        _.delay(function functionName() {
-          videoEl.play();
-        })
+        _.delay(videoEl.play.bind(videoEl));
         videoEl.removeEventListener('timeupdate');
         videoEl.addEventListener('timeupdate', function() {
           var value = 100 / videoEl.duration * videoEl.currentTime;
@@ -154,8 +152,8 @@ $(function() {
 
   }
 
-  function download(settings) {
-    video.render(settings)
+  function download() {
+    this.render(slider.val())
       .then(function(gif) {
         var chooser = $("#fileDialog");
         chooser.change(function() {
@@ -166,8 +164,8 @@ $(function() {
       });
   }
 
-  function uploadToImgur(settings) {
-    video.render(settings)
+  function uploadToImgur() {
+    this.render(slider.val())
       .then(upload.toImgur)
       .then(showImgurUrl, showError);
   }

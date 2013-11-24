@@ -21,25 +21,6 @@ function removeFileSync(filename) {
   }
 }
 
-function getSeekingStart(startOffset) {
-  // constants
-  var inaccuracyPeriod = 30 * 1000;
-
-  // figure out fast vs. accurate seeking
-  var accurateSeekingStart;
-  if (startOffset > inaccuracyPeriod) {
-    accurateSeekingStart = startOffset - inaccuracyPeriod;
-    startOffset = inaccuracyPeriod;
-  } else {
-    accurateSeekingStart = 0;
-  }
-
-  return {
-    accurateSeekingStart: accurateSeekingStart,
-    startOffset: startOffset
-  }
-}
-
 function ffmpegArgs(settings, codec) {
   var seekingStart = getSeekingStart(settings.startTime);
   return [
@@ -58,24 +39,28 @@ function createTmpFile(extension) {
   return output;
 }
 
-function preview(settings) {
+
+var Video = function(settings) {
+  this.settings = settings;
+}
+
+Video.prototype.preview = function() {
   var output = createTmpFile('webm');
 
   // spawn ffmpeg process
-  var args = ffmpegArgs(settings, 'libvpx');
+  var args = ffmpegArgs(this.settings, 'libvpx');
   args.push(output.path);
 
   return  process.run('ffmpeg', args)
     .then(function() {
-      console.log(output);
       return output;
     });
 }
 
-function renderFirstFrame(settings) {
+Video.prototype.renderFirstFrame = function() {
   var output = createTmpFile('png');
-  var args = ffmpegArgs(settings, 'png')
-    .concat(['-f', 'image2',  '-f' , 'image2', '-vframes', 1, output.path]);
+  var args = ffmpegArgs(this.settings, 'png')
+    .concat(['-f', 'image2', '-f' , 'image2', '-vframes', 1, output.path]);
 
   return process.run('ffmpeg', args)
     .then(function() {
@@ -83,14 +68,40 @@ function renderFirstFrame(settings) {
     });
 }
 
-function render(settings) {
+Video.prototype.getMetaData = function() {
+  var args = ['-i', this.settings.pathToVideo];
+  return process.run('ffmpeg', args);
+}
+
+
+Video.prototype.getSize = function() {
+  var deferred = when.defer();
+  this.getMetaData().then(null, null, function(metadata) {
+    deferred.resolve(metadata.match(/(([0-9]{2,5})x([0-9]{2,5}))/));
+  });
+
+  return deferred.promise
+}
+
+Video.prototype.render = function(cut) {
+  console.log(cut);
   var output;
   var dir = new tmp.Dir();
-  var argsFFmpeg = ffmpegArgs(settings, 'png')
-    .concat(['-s', '480x270', '-f', 'image2', '-r', 8, dir.path + '/%03d.png']);
+  var settings = _.extend(
+    {},
+    this.settings,
+    {
+      duration: parseInt(this.settings.duration / 100 * (cut[1] - cut[0])),
+      startTime: parseInt(this.settings.startTime + this.settings.duration / 100 * cut[0])
+    });
 
-  // spawn ffmpeg process
-  return  process.run('ffmpeg', argsFFmpeg)
+  return  this.getSize()
+    .then(function(size) {
+      var argsFFmpeg = ffmpegArgs(settings, 'png')
+        .concat(['-s', size[0], '-f', 'image2', '-r', 8, dir.path + '/%03d.png']);
+
+      return process.run('ffmpeg', argsFFmpeg)
+    })
     .then(function() {
       console.log('ffmpeg process finished. files saved to:', dir);
       output = createTmpFile('gif');
@@ -112,10 +123,22 @@ function render(settings) {
       return output
     });
 }
+function getSeekingStart(startOffset) {
+  // constants
+  var inaccuracyPeriod = 30 * 1000;
 
-module.exports = {
-  'preview': preview,
-  'render': render,
-  'getSeekingStart': getSeekingStart,
-  'renderFirstFrame': renderFirstFrame
-};
+  // figure out fast vs. accurate seeking
+  var accurateSeekingStart;
+  if (startOffset > inaccuracyPeriod) {
+    accurateSeekingStart = startOffset - inaccuracyPeriod;
+    startOffset = inaccuracyPeriod;
+  } else {
+    accurateSeekingStart = 0;
+  }
+
+  return {
+    accurateSeekingStart: accurateSeekingStart,
+    startOffset: startOffset
+  }
+}
+module.exports = Video;
