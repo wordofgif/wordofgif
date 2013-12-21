@@ -84,7 +84,7 @@ Video.prototype.getSize = function() {
 }
 
 Video.prototype.render = function(cut) {
-  console.log(cut);
+
   var output;
   var dir = new tmp.Dir();
   var settings = _.extend(
@@ -93,7 +93,8 @@ Video.prototype.render = function(cut) {
     {
       duration: parseInt(this.settings.duration / 100 * (cut[1] - cut[0])),
       startTime: parseInt(this.settings.startTime + this.settings.duration / 100 * cut[0])
-    });
+    }
+  );
 
   return  this.getSize()
     .then(function(size) {

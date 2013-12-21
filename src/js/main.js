@@ -18,6 +18,7 @@ $(function() {
     box.addClass('set-time')
   })
 
+
   function prepareTypeahead(file_name) {
 
     var files = findFile(file_name);
@@ -29,15 +30,8 @@ $(function() {
 
     var subTitles = new SubTitles(files.subTitlePath);
 
-    $('.typeahead').on('typeahead:selected', function(ev, context) {
-      startVideoProcessing();
-      var pathToShiftedSubTitle = subTitles.createShiftedSubTitlesFile(context.startTimeParsed);
-      var settings = {
-        pathToVideo: files.videoPath,
-        pathToSubTitle: pathToShiftedSubTitle,
-        startTime: context.startTimeParsed,
-        duration: context.duration
-      };
+
+    function initVideo(settings) {
       var video = new Video(settings);
       video.renderFirstFrame()
         .then(addVideo)
@@ -47,7 +41,7 @@ $(function() {
         .then(startVideo, null, function(data) {
           var time = data.match(/time=(\d{2}:\d{2}:\d{2}\.\d{0,3})/);
           if (time && time.length === 2) {
-            var percent = moment.duration(time[1]).asMilliseconds() / context.duration * 100;
+            var percent = moment.duration(time[1]).asMilliseconds() / settings.duration * 100;
             $('.overlay').css({
               width: (100 - percent) + '%'
             });
@@ -57,6 +51,32 @@ $(function() {
       //TODO avoid rendering anew for each call to upload or download
       $("#saveButton").off('click').click(download.bind(video));
       $("#uploadButton").off('click').click(uploadToImgur.bind(video));
+    }
+
+
+    $('#startByTime').click(function() {
+      var startTime = moment.duration($('#start-time').val()).asMilliseconds();
+      var endTime = moment.duration($('#end-time').val()).asMilliseconds();
+      var pathToShiftedSubTitle = subTitles.createShiftedSubTitlesFile(startTime);
+      var settings = {
+        pathToVideo: files.videoPath,
+        pathToSubTitle: pathToShiftedSubTitle,
+        startTime: startTime,
+        duration: endTime - startTime
+      };
+      initVideo(settings);
+    });
+
+    $('.typeahead').on('typeahead:selected', function(ev, context) {
+      startVideoProcessing();
+      var pathToShiftedSubTitle = subTitles.createShiftedSubTitlesFile(context.startTimeParsed);
+      var settings = {
+        pathToVideo: files.videoPath,
+        pathToSubTitle: pathToShiftedSubTitle,
+        startTime: context.startTimeParsed,
+        duration: context.duration
+      };
+      initVideo(settings);
     });
 
     $('.typeahead').typeahead({
@@ -80,8 +100,26 @@ $(function() {
   var slider = $('.bar').noUiSlider({
     range: [0, 100],
     start: [0, 100],
-    connect:true
+    connect: true,
+    slide: sliderChange()
   });
+
+  function sliderChange() {
+    var val = [0, 100];
+    return function() {
+      var videoEl = $('video')[0];
+      var actualVal = slider.val()
+      var value;
+      console.log(actualVal);
+      if (val[0] === actualVal[0]) {
+        value = val[1];
+      } else {
+        value = val[0];
+      }
+      videoEl.currentTime = videoEl.duration / 100 * value;
+      val = actualVal;
+    }
+  }
 
   dropzone
     .on('dragover', hover)
@@ -140,7 +178,7 @@ $(function() {
         videoEl.addEventListener('timeupdate', function() {
           var value = 100 / videoEl.duration * videoEl.currentTime;
           var sliderValues = slider.val();
-          if (value > sliderValues[1]) {
+          if (value >= sliderValues[1] || value < sliderValues[0]) {
             value = sliderValues[0];
             videoEl.currentTime = videoEl.duration / 100 * value;
           }
